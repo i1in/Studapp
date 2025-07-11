@@ -18,6 +18,7 @@ curs/client -> npm start
 
 # SUPERUSER:
 POST to http://localhost:5000/register
+
 {
   "email": "superuser@studapp.ru",
   "firstName": "Example",
