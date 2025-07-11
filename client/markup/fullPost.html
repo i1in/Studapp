@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header__wrapper">
+            <div class="header__left">
+                <a href='/feed' class="header__logo-link header__logo-link--active">
+                    <p class="header__logo">Studapp</p>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <nav class="menu">
+            <a href="/feed" class="menu-item active">
+                <span class="icon">
+                    <svg fill="currentColor" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width="32px"
+                        height="24px" viewBox="0 0 92 92" enableBackground="new 0 0 92 92" xmlSpace="preserve">
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path id="XMLID_1210_"
+                                d="M76,2H16c-2.2,0-4,1.8-4,4v80c0,2.2,1.8,4,4,4h60c2.2,0,4-1.8,4-4V6C80,3.8,78.2,2,76,2z M72,82H20V10h52 V82z M30,67.5c0-1.9,1.6-3.5,3.5-3.5h23.8c1.9,0,3.5,1.6,3.5,3.5S59.3,71,57.3,71H33.5C31.6,71,30,69.4,30,67.5z M30,53.5 c0-1.9,1.6-3.5,3.5-3.5h23.8c1.9,0,3.5,1.6,3.5,3.5S59.3,57,57.3,57H33.5C31.6,57,30,55.4,30,53.5z M61,24.5c0-1.9-1.6-3.5-3.5-3.5 h-24c-1.9,0-3.5,1.6-3.5,3.5v14c0,1.9,1.6,3.5,3.5,3.5h24c1.9,0,3.5-1.6,3.5-3.5V24.5z M37,28h17v7H37V28z">
+                            </path>
+                        </g>
+                    </svg>
+                </span>
+                <span class="label">Лента</span>
+            </a>
+            <a href='/' class="profile-avatar menu-item">
+                <div class="profile-avatar__wrapper">
+                    <img class="profile-avatar__img rounded" src="img/defaultavatar.png" alt="Аватар профиля" />
+                </div>
+                <span class="label">Профиль</span>
+            </a>
+        </nav>
+
+        <main class="content">
+            <div class="breadcrumbs">
+                <p class="breadcrumb">
+                    Лента >
+                </p>
+                <p class="breadcrumb active">
+                    Заметка 
+                </p>
+            </div>
+            <div class="full-post">
+                <div class="post-author">
+                    <div class="post-author__avatar">
+                        <img class="profile-avatar__img rounded post-avatar"
+                            src="img/defaultavatar.png" alt="123" />
+                    </div>
+                    <div class="post-author__name">
+                        <a href="/emptymethod" class="author-name__url">
+                            <p class="author-name">Амир Ихсанов</p>
+                            <p class="author-faculty">
+                                <span class="icon">
+                                    <svg width="16px" height="18px" viewBox="0 -2.4 26.40 28.80"
+                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="#000000"
+                                        stroke-width="0.00024">
+                                        <path d="M2 19h20v3H2zM12 2L2 6v2h20V6
+                             M17 10h3v7h-3zM10.5 10h3v7h-3zM4 10h3v7H4z">
+                                        </path>
+                                    </svg>
+                                </span>
+                                ИВМиИТ
+                            </p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <div class="post-content__title">
+                        <p class="content-text">Кристофер</p>
+                    </div>
+                </div>
+
+                <div class="post-attachments">
+                    <div class="attachments-list">
+                        <div class="attachments-img">
+                            <a class="attachment-item" href="img/lol.jpg">
+                                <img class="attachment-image" src="img/lol.jpg" alt="пример.jpg" />
+                            </a>
+                            <div class="attachment-item">
+                                <img class="attachment-image" src="img/login_image.jpg" alt="пример.jpg" />
+                            </div>
+                            <div class="attachment-item">
+                                <img class="attachment-image" src="img/login_image.jpg" alt="пример.jpg" />
+                            </div>
+                        </div>
+
+                        <div class="attachments-file">
+                            <div class="attachment-item">
+                                <div class="attachment-file">
+                                    <span class="icon-file">
+                                        TXT
+                                    </span>
+                                    <a class="attachment-link" href="img/text.txt"
+                                        download="img/text.txt">
+                                        <p class="attachment-name">text.txt</p>
+                                        <p class="attachment-size">2.1 КБ</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-file">
+                                    <span class="icon-file">
+                                        PDF
+                                    </span>
+                                    <a class="attachment-link" href="img/text.txt"
+                                        download="img/text.txt">
+                                        <p class="attachment-name">text.txt</p>
+                                        <p class="attachment-size">2.1 КБ</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-file">
+                                    <span class="icon-file">
+                                        PDF
+                                    </span>
+                                    <a class="attachment-link" href="img/text.txt"
+                                        download="img/text.txt">
+                                        <p class="attachment-name">text.txt</p>
+                                        <p class="attachment-size">2.1 КБ</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-file">
+                                    <span class="icon-file">
+                                        PDF
+                                    </span>
+                                    <a class="attachment-link" href="img/text.txt"
+                                        download="img/text.txt">
+                                        <p class="attachment-name">text.txt</p>
+                                        <p class="attachment-size">2.1 КБ</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="post-timestamp">
+                    <p class="timestamp">05.06.2025, 23:55</p>
+                </div>
+            </div>
+            <div class="additional">
+                <div class="interaction-buttons">
+                    <div class="interaction-buttons__button">
+                        <button class="reaction-button active" aria-pressed="true" data-id="38">
+                            <svg viewBox="0 0 24 24" class="reaction-icon" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                     C2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09
+                     C13.09 3.81 14.76 3 16.5 3
+                     C19.58 3 22 5.42 22 8.5
+                     c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"></path>
+                            </svg>
+                        </button>
+                        <p class="buttons__count">2</p>
+                    </div>
+                </div>
+            </div>
+            <div class="comments-section">
+                <p class="section-title">
+                    Комментарии
+                </p>
+                <form class="comment-form">
+                    <textarea class="comment-input" placeholder="Оставьте комментарий" rows="2"></textarea>
+                    <button type="submit" class="comment-submit-button" disabled>
+                        Отправить
+                    </button>
+                </form>
+
+                <div class="comment-item">
+                    <div class="comment-author">
+                        <img class="comment-avatar rounded" src="img/defaultavatar.png" alt="User123" />
+                        <span class="comment-author-name">User123</span>
+                        <span class="comment-timestamp">05.06.2025, 23:58</span>
+                    </div>
+                    <p class="comment-content">
+                        Отличный пост, спасибо за информацию!
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
