@@ -53,6 +53,20 @@ Chat.belongsToMany(User, {
     as: 'users',
 });
 
-Message.belongsTo(Message, { as: 'replyTo', foreignKey: 'replyToId' });
+Message.belongsTo(Chat, { foreignKey: 'chatId', as: 'chat' });
+Message.belongsTo(User, { foreignKey: 'userId', as: 'sender' });
 Message.hasMany(MessageAttachment, { foreignKey: 'messageId' });
 Message.hasMany(MessageReaction, { foreignKey: 'messageId' });
+// reply
+Message.belongsTo(Message, { foreignKey: 'replyToId', as: 'replyTo' });
+Message.hasMany(Message, { foreignKey: 'replyToId', as: 'replies' });
+
+MessageAttachment.belongsTo(Message, { foreignKey: 'messageId', as: 'message' });
+
+MessageReaction.belongsTo(Message, { foreignKey: 'messageId', as: 'message' });
+MessageReaction.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+ChatMember.belongsTo(Chat, { foreignKey: 'chatId', as: 'chat' });
+ChatMember.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+ChatMember.belongsTo(Message, { foreignKey: 'lastReadMessageId', as: 'lastReadMessage' });
+
