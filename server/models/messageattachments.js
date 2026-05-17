@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database';
+import sequelize from '../config/database.js';
 
 class MessageAttachment extends Model { }
 
@@ -12,7 +12,7 @@ MessageAttachment.init({
     messageId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'Message', key: 'id' },
+        references: { model: 'messages', key: 'id' },
     },
 
     url: {

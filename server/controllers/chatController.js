@@ -97,7 +97,7 @@ export async function createChat(req, res, next) {
 
         const members = [
             { chatId: chat.id, userId: req.user.id, role: 'owner' },
-            ...membersIds.map(id => ({chatId: chat.id, userId: id, role: 'member'})),
+            ...memberIds.map(id => ({chatId: chat.id, userId: id, role: 'member'})),
         ];
 
         await ChatMember.bulkCreate(members);
@@ -105,5 +105,84 @@ export async function createChat(req, res, next) {
         return res.status(201).json(chat);
     } catch (e) {
         next(ApiError.internal('createChat error: ' + e));
+    }
+}
+
+export async function addMember(req, res, next) {
+    try {
+        const { userId } = req.body;
+        const { chatId } = req.params;
+
+        const requester = await ChatMember.findOne({
+            where: { chatId, userId: req.user.id, leftAt: null },
+        });
+
+        if (!requester || requester.role === 'member') return next(ApiError.forbidden('USER_NOT_ADMIN'));
+
+        const member = await ChatMember.create({chatId, userId, role: 'member'});
+
+        return res.status(201).json(member);
+    } catch (e) {
+        next(ApiError.internal('addMember error: ' + e));
+    }
+}
+
+export async function updateChat(req, res, next) {
+    try {
+        const { name, description, avatarUrl } = req.body;
+        const { chatId } = req.params;
+
+        const requester = await ChatMember.findOne({
+            where: { chatId, userId: req.user.id, leftAt: null },
+        });
+        if (!requester || requester.role === 'member') return next(ApiError.forbidden('USER_NOT_ADMIN'));
+        
+        const chat = await Chat.findByPk(chatId);
+        if (!chat) return next(ApiError.notFound('CHAT_NOT_FOUND'));
+
+        await chat.update({name, description, avatarUrl});
+        return res.json(chat);
+    } catch (e) {
+        next(ApiError.internal('updateChat error: ' + e));
+    }
+}
+
+export async function removeMember(req, res, next) {
+    try {
+        const { chatId, userId } = req.params;
+
+        const requester = await ChatMember.findOne({
+            where: { chatId, userId: req.user.id, leftAt: null },
+        });
+
+        const isSelf = String(userId) === (req.user.id);
+        if(!isSelf && (!requester || requester === 'member')) {
+            return next(ApiError.forbidden('USER_NOT_ADMIN'));
+        }
+
+        await ChatMember.update(
+            { leftAt: new Date() },
+            { where: { chatId, userId } }
+        );
+
+        return res.status(204).send();
+    } catch (e) {
+        next(ApiError.internal('removeMember error: ' + e));
+    }
+}
+
+export async function deleteChat(req, res, next) {
+    try {
+        const { chatId } = req.params;
+
+        const requester = await ChatMember.findOne({
+            where: { chatId, userId: req.user.id, leftAt: null },
+        });
+        if (!requester || requester.role === 'member') return next(ApiError.forbidden('USER_NOT_ADMIN'));
+
+        await Chat.destroy({ where: { id: chatId } });
+        return res.status(204).send();
+    } catch (e) {
+        next(ApiError.internal('deleteChat error: ' + e));
     }
 }

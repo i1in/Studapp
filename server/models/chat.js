@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database';
+import sequelize from '../config/database.js';
 
 class Chat extends Model { }
 
@@ -33,12 +33,12 @@ Chat.init({
     createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'User', key: 'id' },
+        references: { model: 'users', key: 'id' },
     },
     lastMessageId: {
         type: DataTypes.INTEGER, 
         allowNull: true,
-        references: { model: 'Message', key: 'id' },
+        references: { model: 'messages', key: 'id' },
     }
 }, {
     sequelize,

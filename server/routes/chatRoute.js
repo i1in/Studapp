@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { authenticateToken } from "../middleware/authMiddleware";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import * as chatController from "../controllers/chatController.js";
 
 const router = Router();
 
-router.get('/chats', authenticateToken, '...');
-router.get('/chats/:chatId', authenticateToken, '...');
-router.get('/chats/:chatId/members', authenticateToken, '...');
+router.get('/chats', authenticateToken, chatController.getChats);
+router.get('/chats/:chatId', authenticateToken, chatController.getChatById);
+router.get('/chats/:chatId/members', authenticateToken, chatController.getChatMembers);
 
-router.post('/chats', authenticateToken, '...');
-router.post('/chats/:chatId/members', authenticateToken, '...');
+router.post('/chats', authenticateToken, chatController.createChat);
+router.post('/chats/:chatId/members', authenticateToken, chatController.addMember);
 
-router.put('/chats/:chatId', authenticateToken, '...');
+router.put('/chats/:chatId', authenticateToken, chatController.updateChat);
 
-router.delete('/chats/:chatId/members/:userId', authenticateToken, '...');
-router.delete('/chats/:chatId', authenticateToken, '...');
+router.delete('/chats/:chatId/members/:userId', authenticateToken, chatController.removeMember);
+router.delete('/chats/:chatId', authenticateToken, chatController.deleteChat);
 
 export default router;

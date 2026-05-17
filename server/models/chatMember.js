@@ -1,6 +1,5 @@
 import { Model, DataTypes, DATE } from 'sequelize';
-import sequelize from '../config/database';
-import Chat from './chat';
+import sequelize from '../config/database.js';
 
 class ChatMember extends Model {}
 
@@ -13,12 +12,12 @@ ChatMember.init({
     chatId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        references: { model: 'Chat', key: 'id' },
+        references: { model: 'chats', key: 'id' },
     },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'User', key: 'id' },
+        references: { model: 'users', key: 'id' },
     },
 
     role: {
@@ -35,7 +34,7 @@ ChatMember.init({
     lastReadMessageId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        references: { model: 'Message', key: 'id' },
+        references: { model: 'messages', key: 'id' },
     },
 
     joinedAt: {

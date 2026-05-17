@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database';
+import sequelize from '../config/database.js';
 
 class Message extends Model { }
 
@@ -12,23 +12,35 @@ Message.init({
     chatId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'Chat', key: 'id' },
+        references: { model: 'chats', key: 'id' },
     },
     senderId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'User', key: 'id' }
+        references: { model: 'users', key: 'id' }
     },
     replyToId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        references: { model: 'Message', key: 'id' }
+        references: { model: 'messages', key: 'id' }
     },
 
     type: {
-        type: DataTypes.ENUM('text', 'image', 'file', 'voice', 'sticker'),
+        type: DataTypes.ENUM('text', 'image', 'file', 'voice', 'sticker', 'system'),
         allowNull: false,
         defaultValue: 'text',
+    },
+
+    systemEvent: {
+        type: DataTypes.ENUM(
+            'user_joined',
+            'user_left',
+            'member_removed',
+            'member_added',
+            'chat_created',
+            'chat_renamed',
+        ),
+        allowNull: true,
     },
 
     text: {
