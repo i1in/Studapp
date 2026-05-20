@@ -12,7 +12,7 @@ export interface UserRooler {
 export interface User {
     id: number,
     firstName: string,
-    lastname: string,
+    lastName: string,
     username: string,
     status: string,
     role: string,

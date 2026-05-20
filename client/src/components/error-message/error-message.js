@@ -1,0 +1,14 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+function ErrorMessage({ error }) {
+    const errors = {
+        USER_CREDS_IS_WRONG: 'Данный пользователь не найден.',
+        PASSWORD_IS_WRONG: 'Неверный пароль.',
+        CONTENT_TOO_LONG: 'Больше 255 символов не разрешается.',
+        ATTACHMENTS_LIMIT: 'За один пост разрешается не более 6 вложений.'
+    };
+    if (!error || !(error in errors)) {
+        return null;
+    }
+    return (_jsx("p", { className: "error-message", children: errors[error] }));
+}
+export { ErrorMessage };

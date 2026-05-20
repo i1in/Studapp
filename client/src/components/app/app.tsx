@@ -13,18 +13,33 @@ import { Navigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { setToken, selectAuthorizationStatus } from '../../features/api/auth/authSlice';
 
+import { useSocket } from "../../hooks/useSocket";
+import { connectSocket } from '../../hooks/shared/socket';
+import { usePresence } from "../../hooks/usePresence";
+
 function App(): JSX.Element {
     const authorizationStatus = useAppSelector(selectAuthorizationStatus);
     const dispatch = useAppDispatch();
+    usePresence();
     const [isAuthLoaded, setIsAuthLoaded] = useState(false);
+    const socket = useSocket();
+    
+    const user = useAppSelector(state => state.messenger.users[2]); // убрать
+    console.log(user); // убрать
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) dispatch(setToken(token));
         setIsAuthLoaded(true);
+
+        connectSocket();
+
+        socket.emitJoinChat(1); // убрать
+        socket.emitSendTyping(1, true); // убрать
+        socket.emitToggleHidden(false); // убрать
     }, [dispatch]);
 
-    if (!isAuthLoaded) return null;
+    if (!isAuthLoaded) return <div>LOADING</div>;
 
     return (
         <BrowserRouter>

@@ -9,6 +9,19 @@ type User = {
     isAdmin: boolean;
 };
 
+type NewUser = {
+    id: number;
+    email: string;
+    publicId: string;
+    role: string;
+    faculty: string;
+    password: string;
+}
+
+type NewUserData = {
+    user: NewUser;
+}
+
 const FACULTIES = [
     { value: 'ivmiit', label: 'ИВМиИТ' },
     { value: 'itis', label: 'ИТиИС' },
@@ -37,7 +50,7 @@ export default function AdminPage() {
     const [role, setRole] = useState(ROLES[0].value);
     const [registerError, setRegisterError] = useState<string | null>(null);
     const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
-    const [registerSuccessData, setRegisterSuccessData] = useState<string | null>(null);
+    const [registerSuccessData, setRegisterSuccessData] = useState<NewUser | null>(null);
 
     const navigate = useNavigate();
 
@@ -107,7 +120,7 @@ export default function AdminPage() {
                 throw new Error(errData.message || `Ошибка сервера: ${res.status}`);
             }
 
-            const response = await res.json();
+            const response: NewUserData = await res.json();
 
             setRegisterSuccess('Студент зарегистрирован.');
             setRegisterSuccessData(response.user);

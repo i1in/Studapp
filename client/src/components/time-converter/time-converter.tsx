@@ -5,7 +5,7 @@ function ConvertTime({ time }: { time: string }) {
 
     const date = new Date(time);
 
-    const options = {
+    const options: Intl.DateTimeFormatOptions = {
         timeZone: 'Europe/Moscow',
         year: 'numeric',
         month: '2-digit',

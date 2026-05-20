@@ -43,7 +43,7 @@ export const postsApi = api.injectEndpoints({
                     ? [...result.map(({ id }) => ({ type: 'Post' as const, id })), 'Post']
                     : [],
         }),
-        addPost: builder.mutation<FullPost, { content: string; attachments: Attachments[] }>({
+        addPost: builder.mutation<FullPost, { content: string; attachments: File[] }>({
             query: ({ content, attachments }) => {
                 const formData = new FormData();
                 formData.append('content', content);

@@ -69,6 +69,18 @@ User.init({
         ),
         allowNull: true,
     },
+    onlineStatus: {
+        type: DataTypes.STRING(15),
+        defaultValue: 'online',
+    },
+    isOnlineHidden: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    lastSeenAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
     avatarUrl: {
         type: DataTypes.STRING,
         allowNull: true

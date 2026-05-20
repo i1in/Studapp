@@ -1,6 +1,6 @@
-function ErrorMessage({ error }: { error: string }) {
+function ErrorMessage({ error }: { error: string | null }) {
     
-    const errors = {
+    const errors: { [key: string]: string } = {
         USER_CREDS_IS_WRONG: 'Данный пользователь не найден.',
         PASSWORD_IS_WRONG: 'Неверный пароль.',
         CONTENT_TOO_LONG: 'Больше 255 символов не разрешается.',

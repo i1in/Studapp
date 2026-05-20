@@ -19,10 +19,10 @@ export function UserProfile() {
         }
     }, [user?.status]);
 
-    const handleStatusChange = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleStatusChange = async () => {
         try {
             const response = await updateStatus(status).unwrap();
-            setStatus(response.data.status);
+            setStatus(response.status);
         } catch (error) {
             console.log(error)
         }

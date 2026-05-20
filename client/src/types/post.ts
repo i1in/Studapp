@@ -1,7 +1,7 @@
 import { Likes } from './like'
-import { Comments } from './comment'
+import { Comment } from './comment'
 
-type Author = {
+export type Author = {
     id: number;
     firstName: string;
     lastName: string;
@@ -10,12 +10,12 @@ type Author = {
     avatarUrl: string;
 };
 
-type Attachments = {
+export type Attachments = {
     id: number;
     postId: number;
     filename: string;
     fileUrl: string;
-    mimeTipe: string;
+    mimeType: string;
     size: number;
     createdAt: string;
     updatedAt: string;
@@ -50,5 +50,5 @@ export type FullPost = {
     author: Author,
     attachments: Attachments[],
     likes: Likes[],
-    comments: Comments[]
+    comments: Comment[]
 }

@@ -1,6 +1,8 @@
 type CommentAuthor = {
     id: number;
     firstName: string;
+    lastName: string;
+    faculty: string;
     username: string;
     avatarUrl: string;
 }

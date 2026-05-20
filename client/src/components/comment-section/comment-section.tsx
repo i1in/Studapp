@@ -24,19 +24,24 @@ interface CommentProps {
 }
 
 function CommentSection({ comments }: CommentProps) {
-    const { username, id } = useParams();
+    const { username, id } = useParams<{ username: string; id: string }>();
     const [commentText, setCommentText] = useState('');
     const [postComment, { isLoading }] = usePostCommentMutation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!username || !id) {
+            console.error('username или id поста не найдены в URL');
+            return;
+        }
+
         if (!commentText.trim()) return;
 
         try {
             await postComment({
                 username,
-                id,
+                id: Number(id),
                 content: commentText
             }).unwrap();
 

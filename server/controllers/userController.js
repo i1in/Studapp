@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import ApiError from '../error/ApiError.js';
 import User from '../models/users.js';
 import { adaptUserToClient, adaptFullUserToClient, adaptUsersToClient } from '../adapter/userAdapter.js'
+import { onlineUsers } from '../socket/presence/presence.store.js';
 
 async function registration(req, res, next) {
     try {
@@ -255,6 +256,30 @@ export async function getUsers(req, res, next) {
     } catch (err) {
         next(err);
     }
+}
+
+export function getPresence(req, res, next) {
+    const userId = Number(req.params.id);
+
+    const state = onlineUsers.get(userId);
+
+    if (!state) {
+        return res.json({
+            status: 'offline',
+            lastSeen: null,
+        });
+    }
+
+    if (state.hideOnline) {
+        return res.json({
+            status: 'hidden',
+        })
+    }
+
+    return res.json({
+        status: state.status,
+        lastSeen: state.lastSeen,
+    })
 }
 
 export { registration, login, checkAuth, logout, uploadAvatar, editStatus, editUsername, getUser, getUserData };

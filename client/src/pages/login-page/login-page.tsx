@@ -24,12 +24,12 @@ function isApiError(error: unknown): error is ApiError {
 }
 
 function LoginPage() {
-    const navigate = useNavigate();``
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const dispatch = useAppDispatch();
     const [getToken, { isLoading }] = useLoginMutation();
-    const [errorMsg, setErrorMsg] = useState();
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
