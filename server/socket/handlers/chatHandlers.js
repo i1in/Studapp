@@ -56,6 +56,25 @@ export async function emitSystemMessage(io, { chatId, event, actorId, targetId =
     });
 }
 
+export async function joinAllUserChats(socket) {
+    try {
+        const activeMemberships = await ChatMember.findAll({
+            where: { userId: socket.user.id, leftAt: null },
+            attributes: ['chatId']
+        });
+
+        activeMemberships.forEach(membership => {
+            socket.join(String(membership.chatId));
+        });
+
+        socket.join(`user:${socket.user.id}`);
+
+        console.log(`[WS System] user ${socket.user.id} successfully joined ${activeMemberships.length} chat rooms.`);
+    } catch (e) {
+        console.error('[WS System] error joining user chats on connect: ' + e)
+    }
+}
+
 export function registerChatHandlers(io, socket) {
     socket.on('join_chat', async ({ chatId }) => {
         try {
@@ -84,9 +103,6 @@ export function registerChatHandlers(io, socket) {
                     });
                 }
             }
-
-            const rooms = [...socket.rooms].filter(room => room !== socket.id);
-            rooms.forEach(room => socket.leave(room));
 
             socket.join(String(chatId));
 
@@ -117,7 +133,7 @@ export function registerChatHandlers(io, socket) {
         }
     });
 
-    socket.on('leave_chat', async ({ chatId }) => {
+    socket.on('kick_or_leave_chat', async ({ chatId }) => {
         try {
             const chat = await Chat.findByPk(chatId);
             if (chat?.type === 'group') {

@@ -1,27 +1,38 @@
 import { useEffect } from "react";
-import { useSocket } from "./useSocket";
+import { socketEmitters } from "./shared/socketEmitters";
+
+let lastSentStatus: string | null = null;
+let timeout: ReturnType<typeof setTimeout> | null = null;
+
+function emitPresenceStatus(status: 'online' | 'offline') {
+    if (lastSentStatus === status) return;
+
+    lastSentStatus = status;
+
+    if (timeout) clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+        socketEmitters.presenceState(status);
+    }, 200);
+}
+
+export function getStatus() {
+    return document.visibilityState === 'visible' ? 'online' : 'offline';
+}
 
 export function usePresence() {
-    const socket = useSocket();
 
     useEffect(() => {
         const handleVisibilityChange = () => {
-            const status = document.visibilityState === 'visible' ? 'online' : 'offline';
-
-            socket.emitPresenceState(status);
+            emitPresenceStatus(getStatus());
         };
 
-        document.addEventListener(
-            'visibilitychange', handleVisibilityChange
-        );
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        handleVisibilityChange();
+        emitPresenceStatus(getStatus());
 
         return () => {
-            document.removeEventListener(
-                'visibilitychange',
-                handleVisibilityChange
-            );
-        };
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
     }, []);
 }

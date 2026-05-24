@@ -59,7 +59,7 @@ export async function registerUserHandlers(io, socket) {
 
     socket.on('presence:state', async (status: PresenceStatus) => {
         const userId = socket.user.id;
-        const lastActivity = Date.now();
+        const date = Date;
 
         const state = onlineUsers.get(userId);
         if (!state) return;
@@ -67,14 +67,18 @@ export async function registerUserHandlers(io, socket) {
         if (state.hideOnline) return;
 
         state.status = status;
-        state.lastActivity = lastActivity;
+        state.lastActivity = date.now();
 
-        await User.update(
-            { onlineStatus: status, lastSeenAt: lastActivity },
-            { where: { id: userId } }
-        );
+        if (status === 'offline') {
+            state.lastSeen = date.now();
+
+            await User.update(
+                { lastSeenAt: new Date() },
+                { where: { id: userId } }
+            );
+        }
 
         broadcastPresence(io, userId, state);
-        console.log(`[Presence State]: ${userId} is currently ${status} at ${lastActivity}`);
+        console.log(`[Presence State]: ${userId} is currently ${status} at ${state.lastActivity}`);
     });
 }

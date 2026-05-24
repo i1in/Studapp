@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { registerChatHandlers } from './handlers/chatHandlers.js';
+import { joinAllUserChats, registerChatHandlers } from './handlers/chatHandlers.js';
 import { registerMessageHandlers } from './handlers/messageHandlers.js';
 import { initPresence, handleDisconnect } from './presence/presence.service.js';
 import { statePresenceWatcher } from './presence/presence.watcher.js';
@@ -39,6 +39,8 @@ export function initSocket(httpServer) {
     io.on('connection', async (socket) => {
         console.log(`[WS] User connected: userId=${socket.user.id} socketId=${socket.id}`);
         await initPresence(io, socket);
+
+        await joinAllUserChats(socket);
 
         registerChatHandlers(io, socket);
         registerMessageHandlers(io, socket);

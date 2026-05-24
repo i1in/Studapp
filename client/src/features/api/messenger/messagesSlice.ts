@@ -1,30 +1,10 @@
-import { createEntityAdapter, EntityState, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSelector, EntityState, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Message {
-    id: number;
-    chatId: number;
-    senderId: number;
-    type: 'text' | 'image' | 'file' | 'voice' | 'sticker' | 'system';
-    text: string;
-    editedAt: string | null;
-    deletedAt: string | null;
-    createdAt: string;
-    sender: { 
-        id: number;
-        firstName: string;
-        lastName: string;
-        avatarUrl: string | null;
-    };
-    replyToId: number | null;
-    attachments: any[];
-    reactions: any[];
-}
-
-const messagesAdapter = createEntityAdapter<Message, number>({
+const messagesAdapter = createEntityAdapter<MessagePayload, number>({
     selectId: (message) => message.id,
 });
 
-interface MessagesState extends EntityState<Message, number> {
+interface MessagesState extends EntityState<MessagePayload, number> {
     byChat: Record<number, number[]>;
 }
 
@@ -36,18 +16,20 @@ const messagesSlice = createSlice({
     name: "messages",
     initialState,
     reducers: {
-        setHistory(state, action: PayloadAction<Message[]>) {
+        setHistory(state, action: PayloadAction<MessagePayload[]>) {
             const messages = action.payload;
-            if (!messages.length) return;
+            if (messages.length === 0) {
+                return;
+            }
 
             const chatId = messages[0].chatId;
 
-            messagesAdapter.setAll(state, messages);
+            messagesAdapter.upsertMany(state, messages);
 
             state.byChat[chatId] = messages.map(m => m.id);
         },
 
-        addMessage(state, action: PayloadAction<Message>) {
+        addMessage(state, action: PayloadAction<MessagePayload>) {
             const message = action.payload;
 
             if (message.deletedAt) return;
@@ -79,13 +61,13 @@ const messagesSlice = createSlice({
             const msg = state.entities[messageId];
             if (!msg) return;
 
-            msg.deletedAt = new Date().toISOString();
-
             const list = state.byChat[msg.chatId];
             if (list) {
                 const idx = list.indexOf(messageId);
                 if (idx !== -1) list.splice(idx, 1);
             }
+
+            messagesAdapter.removeOne(state, messageId);
         },
 
         updateReaction(state, action: PayloadAction<{ 
@@ -114,6 +96,24 @@ const messagesSlice = createSlice({
         },
     },
 });
+
+export const messagesSelectors = messagesAdapter.getSelectors(
+    (state: { messages: MessagesState }) => state.messages
+);
+
+const selectByChat = (state: { messages: MessagesState }) => state.messages.byChat;
+const selectEntities = (state: { messages: MessagesState }) => state.messages.entities;
+const selectChatId = (_state: {messages: MessagesState}, chatId: number) => chatId;
+
+export const selectMessagesByChat = createSelector(
+    [selectByChat, selectEntities, selectChatId],
+    (byChat, entities, chatId: number) => {
+        const ids = byChat[chatId] ?? [];
+        return ids
+            .map(id => entities[id])
+            .filter(Boolean) as MessagePayload[]
+    }
+)
 
 export const { setHistory, addMessage, editMessage, deleteMessage, updateReaction } = messagesSlice.actions;
 export default messagesSlice.reducer;

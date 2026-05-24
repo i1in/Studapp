@@ -1,0 +1,105 @@
+/* components/messenger/chat-window/message-item.module.css */
+.wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    max-width: 68%;
+}
+
+.own   { align-self: flex-end;   flex-direction: row-reverse; }
+.other { align-self: flex-start; }
+
+.avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.senderName {
+    font-size: 0.74rem;
+    color: #5b6ef5;
+    padding-left: 4px;
+}
+
+.reply {
+    background: #1a1d27;
+    border-left: 3px solid #5b6ef5;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.replyAuthor {
+    font-size: 0.72rem;
+    color: #5b6ef5;
+    font-weight: 500;
+}
+
+.replyText {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bubble {
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    word-break: break-word;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.ownBubble   {
+    background: #5b6ef5;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.otherBubble {
+    background: #1a1d27;
+    color: #e2e4f0;
+    border-bottom-left-radius: 4px;
+}
+.deleted {
+    background: #1a1d27;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.text { flex: 1; }
+
+.meta {
+    font-size: 0.68rem;
+    opacity: 0.6;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.edited { font-style: italic; }
+
+.system {
+    align-self: center;
+    font-size: 0.75rem;
+    color: #f59e0b;
+    background: rgba(245,158,11,0.08);
+    padding: 3px 14px;
+    border-radius: 20px;
+}

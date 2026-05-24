@@ -5,6 +5,7 @@ export const AppRoute = {
     Profile: '/:username',
     Post: '/:username/post',
     Search: '/search',
+    Chats: '/chats',
     Admin: '/admin',
 } as const;
 

@@ -9,8 +9,8 @@ export const userApi = api.injectEndpoints({
       providesTags: ['User'],
       keepUnusedDataFor: 3600,
     }),
-    getProfileById: builder.query<User, number>({
-      query: (id) => `/user`,
+    getProfileById: builder.query<User, void>({
+      query: () => `/user`,
       providesTags: ['User'],
       keepUnusedDataFor: 3600,
     }),

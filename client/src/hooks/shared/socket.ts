@@ -20,3 +20,11 @@ export function connectSocket() {
         socket.connect();
     }
 } 
+
+export function disconnectSocket() {
+    if (!socket.connected) return;
+
+    console.log('[WS] Disconnecting socket...');
+
+    socket.disconnect();
+}

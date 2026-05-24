@@ -6,7 +6,7 @@ import User from '../models/users.js';
 
 export async function getChats(req, res, next) {
     try {
-        const chats = Chat.findAll({
+        const chats = await Chat.findAll({
             include: [
                 {
                     model: ChatMember,
@@ -26,12 +26,36 @@ export async function getChats(req, res, next) {
                             ]
                         }
                     ]
-                }
+                },
+                {
+                    model: ChatMember,
+                    as: 'allMembers',
+                    attributes: ['userId', 'role'],
+                    include: [{
+                        model: User,
+                        as: 'user',
+                        attributes: ['id', 'firstName', 'lastName', 'avatarUrl'],
+                    }],
+                },
             ],
             order: [[{ model: Message, as: 'lastMessage' }, 'createdAt', 'DESC']]
         });
 
-        return res.json(chats);
+        const result = chats.map(chat => {
+            const plain = chat.get({ plain: true });
+
+            if (plain.type === 'direct') {
+                const companion = plain.allMembers 
+                    ?.find(m => m.userId !== req.user.id)
+                    ?.user ?? null;
+                
+                return { ...plain, companion };
+            }
+
+            return plain;
+        })
+
+        return res.json(result);
     } catch (e) {
         next(ApiError.internal('getChats error: ' + e));
     }
@@ -156,7 +180,7 @@ export async function removeMember(req, res, next) {
         });
 
         const isSelf = String(userId) === (req.user.id);
-        if(!isSelf && (!requester || requester === 'member')) {
+        if(!isSelf && (!requester || requester.role === 'member')) {
             return next(ApiError.forbidden('USER_NOT_ADMIN'));
         }
 

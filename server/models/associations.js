@@ -47,6 +47,7 @@ Chat.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 Chat.belongsTo(Message, { foreignKey: 'lastMessageId', as: 'lastMessage' });
 Chat.hasMany(Message, { foreignKey: 'chatId', as: 'messages' });
 Chat.hasMany(ChatMember, { foreignKey: 'chatId', as: 'members' });
+Chat.hasMany(ChatMember, { foreignKey: 'chatId', as: 'allMembers' });
 Chat.belongsToMany(User, {
     through: ChatMember,
     foreignKey: 'chatId',

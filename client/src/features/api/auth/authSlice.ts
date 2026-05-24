@@ -10,7 +10,6 @@ interface AuthState {
   userId: number | null;
 }
 
-
 const initialState: AuthState = {
   token: null,
   isAuthenticated: false,

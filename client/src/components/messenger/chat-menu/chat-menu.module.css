@@ -1,0 +1,279 @@
+.messengerNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 4rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #121212;
+    border-top: 1px solid #333;
+    padding: 0.5rem 0;
+    z-index: 1000;
+}
+
+.navLinks {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.navItem {
+    color: var(--color-tip);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.navIcon {
+    font-size: 1.4rem;
+    color: var(--color-tip);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Из вашего глобального стиля для активных вкладок */
+.navItem:global(.active),
+.navItem:global(.active) .navIcon {
+    color: var(--color-primary);
+}
+
+.navLabel {
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    display: block;
+}
+
+.hamburgerBtn {
+    display: none; /* Скрыта на мобилках */
+}
+
+/* ==========================================================================
+   ДЕСКТОПНЫЙ РЕЖИМ (Экраны от 768px и выше)
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+    .hamburgerBtn {
+        display: flex;
+        background: none;
+        border: none;
+        color: var(--color-tip);
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem;
+        border-radius: 50%;
+        transition: background-color 0.2s, color 0.2s;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 2rem;
+    }
+
+    .hamburgerBtn:hover {
+        background-color: var(--primary-active);
+        color: var(--color-primary);
+    }
+
+    /* Превращаем нижнюю полоску в вертикальный Aside Telegram Web */
+    .messengerNav {
+        position: static;
+        width: 4rem;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #161616;
+        border-top: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 2rem 0.5rem;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-shrink: 0;
+    }
+
+    /* Раскрытие при наведении мыши */
+    .messengerNav:hover {
+        width: 12rem;
+    }
+
+    .navLinks {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 1.5rem;
+        height: auto;
+    }
+
+    .navItem {
+        flex-direction: row;
+        gap: 1rem;
+        padding: 0.65rem 1rem;
+        width: 100%;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        justify-content: flex-start;
+    }
+
+    .navItem:hover {
+        background-color: var(--primary-active);
+    }
+
+    /* Скрываем текст ярлыков на ПК до наведения */
+    .navLabel {
+        opacity: 0;
+        white-space: nowrap;
+        transition: opacity 0.2s ease;
+    }
+
+    .messengerNav:hover .navLabel {
+        opacity: 1;
+    }
+
+    .navIcon {
+        font-size: 1.2rem;
+    }
+}
+
+/* ==========================================================================
+   ВЫДВИЖНАЯ ШТОРКА (БЕЗ ИЗМЕНЕНИЙ)
+   ========================================================================== */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.overlayVisible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 290px;
+    height: 100vh;
+    background-color: #171a21;
+    z-index: 10000;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawerOpen {
+    transform: translateX(0);
+}
+
+.drawerHeader {
+    background-color: var(--primary);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.userAvatar {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.userAvatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatarFallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #2b3952;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.userName {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.userStatus {
+    color: #4caf50;
+    font-size: 0.8rem;
+}
+
+.drawerContent {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+}
+
+.drawerItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    transition: background-color 0.15s;
+}
+
+.drawerItem:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.drawerIcon {
+    font-size: 1.2rem;
+}
+
+.drawerText {
+    font-family: var(--font-family);
+}
+
+.drawerDivider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 0.5rem 0;
+}
+
+.drawerFooter {
+    margin-top: auto;
+    padding: 0.5rem;
+}
+
+@media screen and (max-width: 767px) {
+    .mobileHidden {
+        display: none !important;
+    }
+}

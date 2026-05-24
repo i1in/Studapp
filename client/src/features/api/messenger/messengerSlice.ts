@@ -1,26 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Chat {
-    id: number;
-    name: string;
-    type: 'direct' | 'group' | 'channel';
-    avatarUrl: string | null;
-    lastMessage: any | null;
-}
+import { Chat, Companion, Presence, PresenceStatus, PresenceUser } from '../../../types/messenger';
+import { addMessage } from "./messagesSlice";
 
 interface MessengerState {
     chats: Chat[];
     activeChatId: number | null;
     typingUsers: Record<number, number[]>; // chatId -> userIds
-    readStatus: Record<number, number>;
+    readStatus: Record<number, Record<number, number>>;
 
-    users: Record<number, {
-        id: number;
-        presence?: {
-            status: string,
-            lastSeen: number | null;
-        }
-    }>;
+    users: Record<number, PresenceUser>;
 }
 
 const initialState: MessengerState = {
@@ -39,8 +27,13 @@ const messengerSlice = createSlice({
             state.chats = action.payload;
         },
 
-        setActiveChat(state, action: PayloadAction<number>) {
+        setActiveChat(state, action: PayloadAction<number | null>) {
             state.activeChatId = action.payload;
+
+            const chatIndex = state.chats.findIndex(c => c.id === action.payload);
+            if (chatIndex !== -1) {
+                state.chats[chatIndex].unreadCount = 0;
+            } 
         },
 
         setUserTyping(state, action: PayloadAction<{
@@ -61,45 +54,65 @@ const messengerSlice = createSlice({
         setMessageRead(state, action: PayloadAction<{
             chatId: number; messageId: number; userId: number;
         }>) {
-            const { chatId, messageId } = action.payload;
-            state.readStatus[chatId] = messageId;
+            const { chatId, messageId, userId } = action.payload;
+            if (!state.readStatus[chatId]) state.readStatus[chatId] = {};
+
+            state.readStatus[chatId][userId] = messageId
         },
 
         setUsersPresence(
             state,
             action: PayloadAction<{
                 userId: number;
-                status: string;
+                status: Presence['status'];
                 lastSeen: number | null,
-            }[]> 
+                hidden: boolean;
+            }[]>
         ) {
-            const users = action.payload;
+            const next: MessengerState['users'] = {};
 
-            for (const user of users) {
-                state.users[user.userId] = {
-                    id: user.userId,
+            action.payload.forEach((u) => {
+                next[u.userId] = {
+                    id: u.userId,
                     presence: {
-                        status: user.status,
-                        lastSeen: user.lastSeen,
-                    },
-                };
-            }
+                        status: u.status,
+                        lastSeen: u.lastSeen,
+                        hidden: u.hidden,
+                    }
+                }
+            });
+
+            state.users = next;
         },
 
-        updateUserPresence(state, action: PayloadAction<{
-            userId: number; status: string; lastSeen: number;
-        }>) {
-            const { userId, status, lastSeen } = action.payload;
+        updateUserPresence(state, action: PayloadAction<PresencePayload>) {
+            const { userId, status, lastSeen, hidden } = action.payload;
 
-            if (!state.users[userId]) {
-                state.users[userId] = {
-                    id: userId,
-                };
+            state.users[userId] = {
+                id: userId,
+                presence: {
+                    status,
+                    lastSeen,
+                    hidden: hidden ?? state.users[userId]?.presence?.hidden ?? false,
+                }
             }
-
-            state.users[userId].presence = { status, lastSeen };
         }
     },
+    extraReducers: (builder) => {
+        builder.addCase(addMessage, (state, action) => {
+            const newMessage = action.payload;
+
+            const chatIndex = state.chats.findIndex(c => c.id === newMessage.chatId);
+
+            if (chatIndex !== -1) {
+                state.chats[chatIndex].lastMessage = newMessage;
+
+                if (newMessage.chatId !== state.activeChatId) {
+                    state.chats[chatIndex].unreadCount = (state.chats[chatIndex].unreadCount || 0) + 1;
+                }
+            }
+        })
+    }
 });
 
 export const { setChats, setActiveChat, setUserTyping, setMessageRead, setUsersPresence, updateUserPresence } = messengerSlice.actions;

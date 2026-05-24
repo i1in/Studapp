@@ -15,7 +15,7 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   reducerPath: 'api',
   baseQuery,
-  tagTypes: ['Post', 'User', 'Like', 'Comment'],
+  tagTypes: ['Post', 'User', 'Like', 'Comment', 'Chat'],
   endpoints: () => ({}),
   keepUnusedDataFor: 120, // Глобальные настройки (секунды)
   refetchOnMountOrArgChange: 1, // Автозапрос при изменении аргументов
