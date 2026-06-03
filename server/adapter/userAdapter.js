@@ -46,5 +46,6 @@ export const adaptUsersToClient = (user) => {
         username: user.username || user.publicId,
         avatarUrl: user.avatarUrl,
         faculty: user.faculty,
+        role: user.role,
     }
 }

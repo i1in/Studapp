@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../../components/logo/logo';
-import { ProfileButton } from '../../components/profile-button/profile-button';
+import { ProfileAvatar } from '../../components/profile-avatar/profile-avatar';
 
 type User = {
     id: number;
@@ -169,7 +169,7 @@ export default function AdminPage() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={true} />
+                    <ProfileAvatar />
                 </nav>
                 <main className="content">
                     <div className="admin-panel" style={{ padding: '1rem' }}>

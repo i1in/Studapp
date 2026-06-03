@@ -1,146 +1,53 @@
-.messengerNav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 4rem;
+.bottomBar {
+    width: 100%;
+    height: 3.5rem;
     display: flex;
-    justify-content: space-around;
     align-items: center;
-    background-color: #121212;
-    border-top: 1px solid #333;
-    padding: 0.5rem 0;
-    z-index: 1000;
+    justify-content: center;
+    background-color: var(--background);
+    border-top: var(--border-primary);
+    flex-shrink: 0;
+    user-select: none;
 }
 
 .navLinks {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
     width: 100%;
-    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2rem;
 }
 
-.navItem {
+.tabItem {
     color: var(--color-tip);
     text-decoration: none;
     display: flex;
     align-items: center;
-    flex-direction: column;
-    font-size: 0.8rem;
-    user-select: none;
+    gap: 0.15rem;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
-.navIcon {
-    font-size: 1.4rem;
-    color: var(--color-tip);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.navLinks button {
+    background-color: transparent;
+    border: none;
 }
 
-/* Из вашего глобального стиля для активных вкладок */
-.navItem:global(.active),
-.navItem:global(.active) .navIcon {
+.tabItem:hover {
     color: var(--color-primary);
 }
 
-.navLabel {
-    font-family: var(--font-family);
-    font-size: 0.8rem;
-    display: block;
+.tabIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
 }
 
-.hamburgerBtn {
-    display: none; /* Скрыта на мобилках */
+.tabLabel {
+    font-size: 0.75rem;
 }
 
-/* ==========================================================================
-   ДЕСКТОПНЫЙ РЕЖИМ (Экраны от 768px и выше)
-   ========================================================================== */
-@media screen and (min-width: 768px) {
-    .hamburgerBtn {
-        display: flex;
-        background: none;
-        border: none;
-        color: var(--color-tip);
-        cursor: pointer;
-        align-items: center;
-        justify-content: center;
-        padding: 0.6rem;
-        border-radius: 50%;
-        transition: background-color 0.2s, color 0.2s;
-        width: 44px;
-        height: 44px;
-        margin-bottom: 2rem;
-    }
-
-    .hamburgerBtn:hover {
-        background-color: var(--primary-active);
-        color: var(--color-primary);
-    }
-
-    /* Превращаем нижнюю полоску в вертикальный Aside Telegram Web */
-    .messengerNav {
-        position: static;
-        width: 4rem;
-        height: 100vh;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        background-color: #161616;
-        border-top: none;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 2rem 0.5rem;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        flex-shrink: 0;
-    }
-
-    /* Раскрытие при наведении мыши */
-    .messengerNav:hover {
-        width: 12rem;
-    }
-
-    .navLinks {
-        flex-direction: column;
-        justify-content: flex-start;
-        gap: 1.5rem;
-        height: auto;
-    }
-
-    .navItem {
-        flex-direction: row;
-        gap: 1rem;
-        padding: 0.65rem 1rem;
-        width: 100%;
-        border-radius: var(--border-radius);
-        font-size: 1rem;
-        justify-content: flex-start;
-    }
-
-    .navItem:hover {
-        background-color: var(--primary-active);
-    }
-
-    /* Скрываем текст ярлыков на ПК до наведения */
-    .navLabel {
-        opacity: 0;
-        white-space: nowrap;
-        transition: opacity 0.2s ease;
-    }
-
-    .messengerNav:hover .navLabel {
-        opacity: 1;
-    }
-
-    .navIcon {
-        font-size: 1.2rem;
-    }
-}
-
-/* ==========================================================================
-   ВЫДВИЖНАЯ ШТОРКА (БЕЗ ИЗМЕНЕНИЙ)
-   ========================================================================== */
 .overlay {
     position: fixed;
     top: 0;
@@ -164,11 +71,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 290px;
+    width: 340px;
     height: 100vh;
-    background-color: #171a21;
+    background-color: var(--background);
     z-index: 10000;
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     transform: translateX(-100%);
@@ -185,7 +91,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--secondary);
 }
 
 .userAvatar {
@@ -250,20 +156,16 @@
 }
 
 .drawerItem:hover {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(var(--primary-rgb, .5));
 }
 
 .drawerIcon {
     font-size: 1.2rem;
 }
 
-.drawerText {
-    font-family: var(--font-family);
-}
-
 .drawerDivider {
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--primary);
     margin: 0.5rem 0;
 }
 
@@ -275,5 +177,26 @@
 @media screen and (max-width: 767px) {
     .mobileHidden {
         display: none !important;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .bottomBar {
+        background-color: var(--background);
+        justify-content: space-between;
+        padding: 0 1.25rem;
+        height: 3rem;
+    }
+
+    .navLinks {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-around;
+        gap: 2rem;
+    }
+
+    .tabLabel {
+        display: none;
     }
 }

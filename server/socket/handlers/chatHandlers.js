@@ -1,7 +1,10 @@
 import ChatMember from "../../models/chatMember.js";
 import Message from "../../models/message.js";
+import MessageReaction from "../../models/messagereactions.js";
 import Chat from "../../models/chat.js";
 import User from "../../models/users.js";
+
+import { Op } from "sequelize";
 
 export async function emitSystemMessage(io, { chatId, event, actorId, targetId = null }) {
     const chat = await Chat.findByPk(chatId);
@@ -76,60 +79,232 @@ export async function joinAllUserChats(socket) {
 }
 
 export function registerChatHandlers(io, socket) {
-    socket.on('join_chat', async ({ chatId }) => {
+    socket.on('join_chat', async ({ chatId, targetUserId }) => {
         try {
-            console.log(`trying to join chat: userId=${socket.user.id} chatId=${chatId}`);
-            const chat = await Chat.findByPk(chatId);
+            let targetChatId = chatId;
+            const myId = socket.user.id;
+
+            if (!targetChatId && targetUserId) {
+                console.log(`[WS Join] Checking existing history for direct chat between ${myId} and ${targetUserId}`);
+
+                const existingChat = await Chat.findOne({
+                    where: { type: 'direct' },
+                    include: [
+                        { model: ChatMember, as: 'members', where: { userId: myId, leftAt: null }, attributes: [] },
+                        { model: ChatMember, as: 'allMembers', where: { userId: targetUserId, leftAt: null }, attributes: [] }
+                    ]
+                });
+
+                if (existingChat) {
+                    targetChatId = existingChat.id;
+
+                    socket.emit('chat_create_success', { chatId: existingChat.id });
+                } else {
+                    return socket.emit('history', []);
+                }
+            }
+
+            const chat = await Chat.findByPk(targetChatId);
             if (!chat) return socket.emit('error', { message: 'CHAT_NOT_FOUND' });
 
             let member = await ChatMember.findOne({
-                where: { chatId, userId: socket.user.id, leftAt: null },
+                where: { chatId: targetChatId, userId: myId, leftAt: null }
             });
 
             if (!member) {
                 member = await ChatMember.create({
-                    chatId,
-                    userId: socket.user.id,
-                    joinedAt: new Date(),
-                    lastReadMessageId: null,
-                    leftAt: null,
+                    chatId: targetChatId, userId: myId, joinedAt: new Date(), role: 'member',
                 });
-
-                if (chat?.type === 'group') {
-                    await emitSystemMessage(io, {
-                        chatId,
-                        event: 'user_joined',
-                        actorId: socket.user.id,
-                    });
-                }
             }
 
-            socket.join(String(chatId));
+            try {
+                const allChatMembers = await ChatMember.findAll({
+                    where: {
+                        chatId: targetChatId,
+                        leftAt: null,
+                        userId: { [Op.ne]: myId }
+                    },
+                    attributes: ['userId']
+                })
+
+                if (allChatMembers.length > 0) {
+                    const memberIds = allChatMembers.map(m => m.userId);
+
+                    const usersPresenceInfo = await User.findAll({
+                        where: { id: { [Op.in]: memberIds } },
+                        attributes: ['id', 'lastSeenAt']
+                    });
+
+                    const presencePayload = usersPresenceInfo.map(u => {
+                        const isOnlineNow = io.sockets.adapter.rooms.has(`user_${u.id}`);
+
+                        return {
+                            userId: u.id,
+                            status: isOnlineNow ? 'online' : 'offline',
+                            lastSeen: u.lastSeenAt ? new Date(u.lastSeenAt).getTime() : null,
+                            hidden: false,
+                        };
+                    });
+
+                    if (chat.type === 'direct' && presencePayload.length > 0) {
+                        socket.emit('presence:update', presencePayload[0]);
+                    } else if (presencePayload.length > 0) {
+                        socket.emit('presence:state', presencePayload);
+                    }
+                    
+                    console.log(`[WS Presence] synced presence info for ${presencePayload.length} members in chatId=${targetChatId} for userId=${myId}`);
+                }
+            } catch (presenceError) {
+                console.error(`[WS Presence] error syncing presence info for chatId=${targetChatId} userId=${myId}: ` + presenceError);
+            }
+
+            socket.join(String(targetChatId));
 
             const messages = await Message.findAll({
-                where: { chatId },
+                where: { chatId: targetChatId },
                 limit: 50,
                 order: [['createdAt', 'DESC']],
                 include: [
-                    {
-                        model: User,
-                        as: 'sender',
-                        attributes: ['id', 'firstName', 'lastName', 'avatarUrl'],
-                        required: false,
+                    { 
+                        model: User, 
+                        as: 'sender', 
+                        attributes: ['id', 'firstName', 'lastName', 'avatarUrl'], 
+                        required: false 
                     },
+                    {
+                        model: MessageReaction,
+                        as: 'reactions',
+                        attributes: ['userId', 'emoji'],
+                        required: false
+                    }
                 ],
             });
 
+            const latestMessageId = messages.length > 0 ? messages[0].id : null;
+
             socket.emit('history', messages.reverse());
 
-            if (messages.length > 0) {
-                await member.update({ lastReadMessageId: messages.at(-1).id });
+            if (latestMessageId) {
+                await member.update({ lastReadMessageId: latestMessageId });
             }
 
-            console.log(`[Join Chat] userId=${socket.user.id} chatId=${chatId}`);
+            console.log(`[Join Chat Success] userId=${myId} chatId=${targetChatId}`);
         } catch (e) {
             console.error('[Join Chat error]: ' + e);
             socket.emit('error', { message: 'SERVER_ERROR' });
+        }
+    });
+
+    socket.on('create_chat', async ({ type, userIds, name, firstMessageText }) => {
+        try {
+            const myId = socket.user.id;
+            const targetType = type || 'direct';
+
+            let chat = null;
+            let isNewChat = false;
+            let finalTargetUserIds = [];
+
+            if (type === 'direct') {
+                const targetUserId = Array.isArray(userIds) ? userIds[0] : userIds;
+                if (!targetUserId || Number(targetUserId) === myId) return;
+
+                finalTargetUserIds = [Number(targetUserId)];
+
+                let chat = await Chat.findOne({
+                    where: { type: 'direct' },
+                    include: [
+                        { model: ChatMember, as: 'members', where: { userId: myId, leftAt: null }, attributes: [] },
+                        { model: ChatMember, as: 'allMembers', where: { userId: targetUserId, leftAt: null }, attributes: [] }
+                    ]
+                });
+
+                let isNewChat = false;
+
+                if (!chat) {
+                    isNewChat = true;
+
+                    chat = await Chat.create({
+                        type: 'direct',
+                        createdBy: myId
+                    });
+
+                    await ChatMember.bulkCreate([
+                        { chatId: chat.id, userId: myId, role: 'member' },
+                        { chatId: chat.id, userId: targetUserId, role: 'member' }
+                    ]);
+                }
+
+                socket.join(String(chat.id));
+
+                const targetSocketRoom = io.sockets.adapter.rooms.get(`user_${targetUserId}`);
+                if (targetSocketRoom) {
+                    targetSocketRoom.forEach(socketId => {
+                        const clientSocket = io.sockets.sockets.get(socketId);
+                        if (clientSocket) {
+                            clientSocket.join(String(chat.id));
+                        }
+                    });
+                }
+
+                let lastMessagePayload = null;
+
+                if (firstMessageText && firstMessageText.trim()) {
+                    const message = await Message.create({
+                        chatId: chat.id,
+                        senderId: myId,
+                        text: firstMessageText.trim(),
+                        type: 'text',
+                        replyToId: null
+                    });
+
+                    const fullMessage = await Message.findByPk(message.id, {
+                        include: [
+                            { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }
+                        ]
+                    });
+
+                    lastMessagePayload = fullMessage.get({ plain: true });
+
+                    await chat.update({ lastMessageId: message.id });
+
+                    io.to(String(chat.id)).emit('new_message', lastMessagePayload);
+                }
+
+
+                const fullChatData = await Chat.findByPk(chat.id, {
+                    include: [{
+                        model: ChatMember, as: 'allMembers', attributes: ['userId', 'role'],
+                        include: [{ model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'username', 'faculty', 'role', 'publicId'] }]
+                    }]
+                });
+
+                const chatPayload = fullChatData.get({ plain: true });
+
+                const companionForMe = chatPayload.allMembers.find(m => m.userId === Number(targetUserId));
+                if (companionForMe && companionForMe.user) {
+                    chatPayload.companion = companionForMe.user;
+                }
+
+                chatPayload.lastMessage = lastMessagePayload;
+                chatPayload.unreadCount = 0;
+
+                socket.emit('new_chat', chatPayload);
+
+                const chatPayloadForTarget = { ...chatPayload };
+                const companionForTarget = chatPayload.allMembers.find(m => m.userId === myId);
+                if (companionForTarget && companionForTarget.user) {
+                    chatPayloadForTarget.companion = companionForTarget.user;
+                }
+
+                chatPayloadForTarget.unreadCount = isNewChat ? 1 : 0;
+
+                io.to(`user_${targetUserId}`).emit('new_chat', chatPayloadForTarget);
+
+                socket.emit('chat_create_success', { chatId: chat.id });
+            }
+        } catch (e) {
+            console.error('[Create Chat Error]: ' + e);
+            socket.emit('error', { message: 'SERVER_ERROR' })
         }
     });
 

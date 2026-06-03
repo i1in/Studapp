@@ -11,11 +11,6 @@ export function registerChatRoomListeners(dispatch: AppDispatch) {
 
     socket.on('history', onHistory);
 
-    // socket.onAny((event, data) => {
-    //     console.log('[SOCKET EVENT]', event, data);
-    //     console.log('SOCKET ID:', socket.id);
-    // });
-
     return () => {
         socket.off('history', onHistory);
     };

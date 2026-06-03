@@ -3,6 +3,10 @@ export interface Companion {
     firstName: string;
     lastName: string;
     avatarUrl: string | null;
+    faculty: string;
+    username: string;
+    publicId: string;
+    role: string;
 }
 
 export interface ChatMember {
@@ -19,6 +23,7 @@ export interface Chat {
     allMembers: ChatMember[];
     lastMessage: MessagePayload | null;
     companion: Companion | null;
+    createdBy: number;
 
     unreadCount?: number;
 }

@@ -1,6 +1,6 @@
-import { setHistory, editMessage, deleteMessage, updateReaction } from "../../../../features/api/messenger/messagesSlice";
-import { setUserTyping, setUsersPresence, updateUserPresence } from "../../../../features/api/messenger/messengerSlice";
-import { AppDispatch, store } from "../../../../store/store";
+import { editMessage, deleteMessage, updateReaction } from "../../../../features/api/messenger/messagesSlice";
+import { setActiveChat, addNewChat, setUserTyping, setUsersPresence, updateUserPresence } from "../../../../features/api/messenger/messengerSlice";
+import { AppDispatch, store, RootState } from "../../../../store/store";
 import { getStatus } from "../../../usePresence";
 import { socket } from "../../socket";
 import { socketEmitters } from "../../socketEmitters";
@@ -24,8 +24,29 @@ export function registerCoreListeners(dispatch: AppDispatch) {
     }
 
     const onError = (message: SocketServerErrorPayload) => {
-        console.error('[WS] Error: ' + message);
+        console.error('[WS] Error: ' + message.message);
     }
+
+    const onNewChat = (chatPayload: any) => {
+        console.log('[WS] Received new chat payload: ', chatPayload);
+
+        const state = store.getState();
+        const myId = state.auth.userId;
+
+        dispatch(addNewChat({chat: chatPayload, myId}));
+
+        if (chatPayload.createdBy === myId && state.messenger.activeChatId === -chatPayload.companion?.id) {
+            dispatch(setActiveChat(chatPayload.id));
+        }
+    };
+
+    const onChatCreateSuccess = ({ chatId }: { chatId: number }) => {
+        console.log('[WS] Chat created successfully, opening room: ', chatId);
+
+       // dispatch(setActiveChat(chatId));
+
+        socketEmitters.joinChat(chatId);
+    };
 
     const onMessageEdit = ({
         messageId,
@@ -36,9 +57,19 @@ export function registerCoreListeners(dispatch: AppDispatch) {
         dispatch(editMessage({ messageId, text, editedAt }));
     };
 
-    const onMessageDelete = (messageId: number) => {
-        console.log('MESSAGE_DELETE EVENT');
-        dispatch(deleteMessage({ messageId }));
+    const onMessageDelete = (data: any) => {
+        console.log('MESSAGE_DELETE EVENT received: ', data);
+        console.log('[SOCKET DEBUG] Прилетели данные удаления с бэка:', data);
+        console.log('Предыдущее сообщение в объекте:', data.previousMessage);
+
+
+        const cleanActionPayload = {
+            messageId: Number(data.messageId ?? data.id),
+            chatId: Number(data.chatId),
+            previousMessage: data.previousMessage || null
+        };
+
+        dispatch(deleteMessage(cleanActionPayload));
     };
 
     const onTyping = ({
@@ -96,6 +127,10 @@ export function registerCoreListeners(dispatch: AppDispatch) {
 
     socket.on('presence:update', onPresenceUpdate);
 
+    socket.on('new_chat', onNewChat);
+
+    socket.on('chat_create_success', onChatCreateSuccess);
+
     return () => {
         socket.off('connect', onConnect);
         socket.off('disconnect', onDisconnect);
@@ -107,6 +142,9 @@ export function registerCoreListeners(dispatch: AppDispatch) {
         socket.off('message_react', onMessageReact);
 
         socket.off('presence:init', onPresenceInit);
-        socket.off('presence:update', onPresenceUpdate)
+        socket.off('presence:update', onPresenceUpdate);
+
+        socket.off('new_chat', onNewChat);
+        socket.off('chat_create_success', onChatCreateSuccess);
     }
 }

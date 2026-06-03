@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Chat, Companion, Presence, PresenceStatus, PresenceUser } from '../../../types/messenger';
-import { addMessage } from "./messagesSlice";
+import { addMessage, deleteMessage, editMessage } from "./messagesSlice";
 
 interface MessengerState {
     chats: Chat[];
@@ -27,13 +27,37 @@ const messengerSlice = createSlice({
             state.chats = action.payload;
         },
 
+        addNewChat(state, action: PayloadAction<{ chat: Chat; myId: number | null }>) {
+            const { chat: newChat, myId } = action.payload;
+
+            const exists = state.chats.some(c => c.id === newChat.id);
+            if (exists) return;
+
+            if (newChat.type === 'direct' && newChat.allMembers) {
+                const companionMember = newChat.allMembers.find(
+                    (m: any) => m.user && (m.user && m.userId !== myId)
+                );
+
+                if (companionMember && companionMember.user) {
+                    newChat.companion = companionMember.user;
+                }
+            }
+
+            const companionId = newChat.companion?.id;
+            if (companionId) {
+                state.chats = state.chats.filter(c => c.id !== -companionId);
+            }
+
+            state.chats.unshift(newChat);
+        },
+
         setActiveChat(state, action: PayloadAction<number | null>) {
             state.activeChatId = action.payload;
 
             const chatIndex = state.chats.findIndex(c => c.id === action.payload);
             if (chatIndex !== -1) {
                 state.chats[chatIndex].unreadCount = 0;
-            } 
+            }
         },
 
         setUserTyping(state, action: PayloadAction<{
@@ -88,14 +112,18 @@ const messengerSlice = createSlice({
         updateUserPresence(state, action: PayloadAction<PresencePayload>) {
             const { userId, status, lastSeen, hidden } = action.payload;
 
+            const existing = state.users[userId];
+
             state.users[userId] = {
                 id: userId,
                 presence: {
-                    status,
-                    lastSeen,
-                    hidden: hidden ?? state.users[userId]?.presence?.hidden ?? false,
-                }
-            }
+                    status: status ?? existing?.presence?.status ?? 'offline',
+                    lastSeen: lastSeen !== null && lastSeen !== undefined ? lastSeen : (existing?.presence?.lastSeen ?? null),
+                    hidden: hidden ?? existing?.presence?.hidden ?? false,
+                },
+            };
+
+            console.log(`Updated presence for user ${userId}:`, state.users[userId].presence);
         }
     },
     extraReducers: (builder) => {
@@ -111,9 +139,41 @@ const messengerSlice = createSlice({
                     state.chats[chatIndex].unreadCount = (state.chats[chatIndex].unreadCount || 0) + 1;
                 }
             }
-        })
+        });
+
+        builder.addCase(editMessage, (state, action) => {
+            const { messageId, text, editedAt } = action.payload;
+
+            const chat = state.chats.find(c => c.lastMessage?.id === messageId);
+
+            if (chat && chat.lastMessage) {
+                chat.lastMessage.text = text;
+                chat.lastMessage.editedAt = editedAt;
+            }
+        });
+
+        builder.addCase(deleteMessage, (state, action) => {
+            const messageId = action.payload.messageId ?? (action.payload as any).id;
+            const chatId = action.payload.chatId;
+            const previousMessage = action.payload.previousMessage;
+
+            const chatIndex = state.chats.findIndex(c => c.id === chatId);
+
+            if (chatIndex !== -1 && messageId) {
+                const currentChat = state.chats[chatIndex];
+
+                state.chats[chatIndex] = {
+                    ...currentChat,
+                    lastMessage: previousMessage ?? null
+                };
+
+                if (currentChat.unreadCount && currentChat.unreadCount > 0) {
+                    state.chats[chatIndex].unreadCount = currentChat.unreadCount - 1;
+                }
+            }
+        });
     }
 });
 
-export const { setChats, setActiveChat, setUserTyping, setMessageRead, setUsersPresence, updateUserPresence } = messengerSlice.actions;
+export const { setChats, addNewChat, setActiveChat, setUserTyping, setMessageRead, setUsersPresence, updateUserPresence } = messengerSlice.actions;
 export default messengerSlice.reducer;

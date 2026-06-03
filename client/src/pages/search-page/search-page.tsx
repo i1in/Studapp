@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../../components/logo/logo'
 import { Faculty } from '../../components/post-card/post-faculty';
-import { ProfileButton } from '../../components/profile-button/profile-button'
+import { ProfileAvatar } from '../../components/profile-avatar/profile-avatar'
 
 type User = {
     id: number;
@@ -98,7 +98,7 @@ export default function UserSearchPage() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={false} />
+                    <ProfileAvatar active={false} />
                 </nav>
 
                 <main className="content">

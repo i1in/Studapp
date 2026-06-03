@@ -1,19 +1,93 @@
 :root {
-    --color-primary: #f8f8f8;
-    --color-secondary: #b6b6b6;
-    --color-tip: #6d6d6d;
-    --background: #121212;
-    --primary: #202020;
-    --primary-active: #373737;
-
-
-    --button-primary: #282828;
     --border-radius: .9rem;
-    --border-primary: 0.1px solid rgba(0, 0, 0, 0.4);
-    --border-primary-color: rgba(0, 0, 0, 0.1);
     --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    
+    color-scheme: dark; 
 }
+
+:root, [data-theme="dark"] {
+    color-scheme: dark;
+    --color-primary-rgb: 248, 248, 248;
+    --color-primary: rgb(var(--color-primary-rgb));
+
+    --color-secondary-rgb: 182, 182, 182;
+    --color-secondary: rgb(var(--color-secondary-rgb));
+
+    --color-tip-rgb: 110, 110, 110;
+    --color-tip: rgb(var(--color-tip-rgb));
+
+    --background-rgb: 18, 18, 18;
+    --background: rgb(var(--background-rgb));
+    
+    --primary-rgb: 32, 32, 32;
+    --primary: rgb(var(--primary-rgb));
+
+    --secondary-rgb: 40, 40, 40;
+    --secondary: rgb(var(--secondary-rgb));
+    
+    --primary-active-rgb: 52, 52, 52;
+    --primary-active: rgb(var(--primary-active));
+
+    --color-danger-rgb: 239, 68, 68;
+    --color-danger: rgb(var(--color-danger-rgb));
+    
+    --color-success-rgb: 34, 197, 94;
+    --color-success: rgb(var(--color-success-rgb));
+    
+    --color-warning-rgb: 234, 179, 8;
+    --color-warning: rgb(var(--color-warning-rgb));
+    
+    --color-accent-rgb: 59, 130, 246;
+    --color-accent: rgb(var(--color-accent-rgb));
+    
+    --color-link: #60a5fa; 
+
+    --button-primary: rgb(34, 34, 34);
+    --border-primary: 0.3px solid rgba(0, 0, 0, 0.4);
+    --border-primary-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+    --color-primary-rgb: 18, 18, 18;
+    --color-primary: rgb(var(--color-primary-rgb));
+
+    --color-secondary-rgb: 70, 70, 70;
+    --color-secondary: rgb(var(--color-secondary-rgb));
+
+    --color-tip-rgb: 120, 120, 120;
+    --color-tip: rgb(var(--color-tip-rgb));
+
+    --background-rgb: 245, 245, 247;
+    --background: rgb(var(--background-rgb));
+    
+    --primary-rgb: 255, 255, 255;
+    --primary: rgb(var(--primary-rgb));
+    
+    --secondary-rgb: 230, 230, 235;
+    --secondary: rgb(var(--secondary-rgb));
+
+    --color-danger-rgb: 220, 38, 38; 
+    --color-danger: rgb(var(--color-danger-rgb));
+    
+    --color-success-rgb: 22, 163, 74; 
+    --color-success: rgb(var(--color-success-rgb));
+    
+    --color-warning-rgb: 202, 138, 4; 
+    --color-warning: rgb(var(--color-warning-rgb));
+    
+    --color-accent-rgb: 37, 99, 235; 
+    --color-accent: rgb(var(--color-accent-rgb));
+    
+    --color-link: #2563eb;
+    
+    --primary-active: rgb(220, 220, 225);
+    --button-primary: rgb(225, 225, 230);
+    --border-primary: 0.3px solid rgba(0, 0, 0, 0.08);
+    --border-primary-color: rgba(0, 0, 0, 0.04);
+}
+
 
 html {
     height: 100%;
@@ -272,7 +346,6 @@ body {
     font-size: 1rem;
 }
 
-/* FEED & PROFILE */
 
 .layout {
     display: flex;
@@ -330,7 +403,6 @@ body {
 }
 
 .profile-avatar__wrapper {
-    width: 100%;
     height: auto;
     display: flex;
     justify-content: center;
@@ -1330,4 +1402,14 @@ body {
 
     color: var(--color-secondary);
     cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    html, body, #root {
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow: hidden !important; /* Запрещает скролл самого сайта, заставляя скроллиться только чат */
+        position: fixed;
+        width: 100%;
+    }
 }

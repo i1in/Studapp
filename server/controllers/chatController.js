@@ -22,7 +22,7 @@ export async function getChats(req, res, next) {
                             model: User,
                             as: 'sender',
                             attributes: [
-                                'id', 'firstName', 'lastName', 'avatarUrl'
+                                'id', 'firstName', 'lastName', 'avatarUrl', 'publicId', 'username', 'role'
                             ]
                         }
                     ]
@@ -34,7 +34,7 @@ export async function getChats(req, res, next) {
                     include: [{
                         model: User,
                         as: 'user',
-                        attributes: ['id', 'firstName', 'lastName', 'avatarUrl'],
+                        attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'publicId', 'username', 'role'],
                     }],
                 },
             ],
@@ -96,7 +96,7 @@ export async function getChatMembers(req, res, next) {
                 model: User,
                 as: 'user',
                 attributes: [
-                    'id', 'firstName', 'lastName', 'avatarUrl', 'username'
+                    'id', 'firstName', 'lastName', 'avatarUrl', 'username', 'publicId'
                 ],
             }]
         });

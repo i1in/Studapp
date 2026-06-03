@@ -17,7 +17,7 @@ type MessagePayload = {
     sender: MessageSenderPayload;
     replyToId: number | null;
     attachments: any[];
-    reactions: any[];
+    reactions: MessageReactPayload[];
 }
 
 type MessageEditPayload = {
@@ -33,10 +33,8 @@ type MessageReadPayload = {
 };
 
 type MessageReactPayload = {
-    messageId: number;
     userId: number;
     emoji: string;
-    action: 'added' | 'removed';
 }
 
 type TypingPayload = {

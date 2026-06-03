@@ -38,8 +38,9 @@ export function initSocket(httpServer) {
 
     io.on('connection', async (socket) => {
         console.log(`[WS] User connected: userId=${socket.user.id} socketId=${socket.id}`);
-        await initPresence(io, socket);
+        socket.join(`user_${socket.user.id}`);
 
+        await initPresence(io, socket);
         await joinAllUserChats(socket);
 
         registerChatHandlers(io, socket);

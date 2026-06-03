@@ -1,11 +1,14 @@
+import React from "react";
 import { useAppSelector } from "../../../store/hooks";
 import styles from './typing-indicator.module.css';
 
 interface Props {
     chatId: number;
+    className?: string;
+    chatType?: string;
 }
 
-export function TypingIndicator({ chatId }: Props) {
+export function TypingIndicator({ chatId, className, chatType }: Props) {
     // id печатающих
     const typingUserIds = useAppSelector(
         s => s.messenger.typingUsers[chatId] ?? []
@@ -15,11 +18,12 @@ export function TypingIndicator({ chatId }: Props) {
         s => s.messenger.chats.find(c => c.id === chatId)
     );
 
-    if (!typingUserIds.length || !currentChat) {
-        return <div className={styles.placeholder} />
-    }
+    if (!typingUserIds.length) return null;
 
-    const names = typingUserIds
+    let text = 'печатает...';
+
+    if (chatType !== 'direct' && currentChat?.allMembers) {
+        const names = typingUserIds
         .map(typingId => {
             const member = currentChat.allMembers?.find(m => m.userId === typingId);
             return member?.user ? `${member.user.firstName}` : 'Кто-то';
@@ -27,12 +31,15 @@ export function TypingIndicator({ chatId }: Props) {
         .filter(Boolean)
         .join(', ')
 
+        text = names ? `${names} печатают...` : 'печатает...'
+    }
+
     return (
-        <div className={styles.indicator}>
+        <div className={className}>
             <span className={styles.dots}>
                 <span /><span /><span />
             </span>
-            {names} печатает...
+            <span>{text}</span>
         </div>
     );
 }

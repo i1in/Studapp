@@ -1,8 +1,22 @@
 import { socket } from "./socket";
 
 export const socketEmitters = {
+    createChat(payload: {
+        type: 'direct' | 'group' | 'channel';
+        userIds: number[];
+        name?: string;
+        firstMessageText?: string;
+    }
+    ) {
+        socket.emit('create_chat', payload);
+    },
+
     joinChat(chatId: number) {
-        socket.emit('join_chat', { chatId });
+        socket.emit('join_chat', { chatId })
+    },
+
+    openChat(chatId: number) {
+        socket.emit('open_chat', { chatId });
     },
 
     leaveChat(chatId: number) {

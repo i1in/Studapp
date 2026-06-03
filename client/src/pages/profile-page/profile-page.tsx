@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import { UserCardList } from '../../components/user-posts-list/user-posts-list';
 import { UserProfile } from '../../components/user-profile-component/user-profile-component';
 import { UserPost } from '../../components/user-profile-component/user-post';
-import { ProfileButton } from '../../components/profile-button/profile-button';
+import { ProfileAvatar } from '../../components/profile-avatar/profile-avatar';
 import { LogoutButton } from '../../components/logout/logout';
 import { AdminButton } from '../../components/admin-button/admin-button';
 import NotFound from '../not-found/not-found';
@@ -73,7 +73,7 @@ function ProfilePage() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={true} />
+                    <ProfileAvatar active={true} />
                 </nav>
 
                 <main className="content">

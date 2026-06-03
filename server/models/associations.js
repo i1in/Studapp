@@ -57,7 +57,7 @@ Chat.belongsToMany(User, {
 Message.belongsTo(Chat, { foreignKey: 'chatId', as: 'chat' });
 Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
 Message.hasMany(MessageAttachment, { foreignKey: 'messageId', as: 'attachments' });
-Message.hasMany(MessageReaction, { foreignKey: 'messageId', as: 'reactions' });
+Message.hasMany(MessageReaction, { foreignKey: 'messageId', as: 'reactions', onDelete: 'CASCADE' });
 // reply
 Message.belongsTo(Message, { foreignKey: 'replyToId', as: 'replyTo' });
 Message.hasMany(Message, { foreignKey: 'replyToId', as: 'replies' });

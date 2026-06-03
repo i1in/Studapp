@@ -5,8 +5,10 @@ import ChatMember from '../../models/chatMember.js';
 import Chat from '../../models/chat.js';
 import User from '../../models/users.js';
 
+import { Op } from 'sequelize';
+
 export function registerMessageHandlers(io, socket) {
-    socket.on('message_send', async ({chatId, text, type = 'text', replyToId}) => {
+    socket.on('message_send', async ({ chatId, text, type = 'text', replyToId }) => {
         try {
             if (!text.trim()) return socket.emit('error', { message: 'MESSAGE_EMPTY' });
 
@@ -27,8 +29,9 @@ export function registerMessageHandlers(io, socket) {
                 include: [
                     { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] },
                     { model: MessageAttachment, as: 'attachments' },
-                    { model: Message, as: 'replyTo',
-                        include: [{model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
+                    {
+                        model: Message, as: 'replyTo',
+                        include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
                     }
                 ],
             });
@@ -57,9 +60,9 @@ export function registerMessageHandlers(io, socket) {
             if (!message) return socket.emit('error', { message: 'MESSAGE_NOT_FOUND' });
             if (message.senderId !== socket.user.id) return socket.emit('error', { message: 'NOT_MESSAGE_OWNER' });
 
-            await message.update({ 
-                text: text.trim(), 
-                editedAt, 
+            await message.update({
+                text: text.trim(),
+                editedAt,
             });
 
             io.to(String(message.chatId)).emit('message_edit', {
@@ -88,9 +91,20 @@ export function registerMessageHandlers(io, socket) {
                 if (!hasRights) return socket.emit('error', { message: 'NOT_MESSAGE_OWNER' });
             }
 
+            const chatId = message.chatId;
+            const id = message.id;
+
+            const prevMessageRow = await Message.findOne({
+                where: { chatId, id: { [Op.lt]: id } },
+                order: [['id', 'DESC']],
+                include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName'] }]
+            });
+
+            const previousMessage = prevMessageRow ? prevMessageRow.get({ plain: true }) : null;
+
             await message.destroy();
 
-            io.to(String(message.chatId)).emit('message_delete', { messageId });
+            io.to(String(chatId)).emit('message_delete', { messageId: id, chatId, previousMessage });
             console.log(`[Delete Message] userId=${socket.user.id} chatId=${message.chatId} messageId=${message.id}`);
         } catch (e) {
             console.error('[Delete Message error]: ' + e);

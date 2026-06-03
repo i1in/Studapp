@@ -1,5 +1,5 @@
 import { Logo } from '../../components/logo/logo';
-import { ProfileButton } from '../../components/profile-button/profile-button';
+import { ProfileAvatar } from '../../components/profile-avatar/profile-avatar';
 import { LogoutButton } from '../../components/logout/logout';
 
 function NotFound() {
@@ -35,7 +35,7 @@ function NotFound() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={false} />
+                    <ProfileAvatar active={false} />
                 </nav>
 
                 <main className="content">

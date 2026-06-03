@@ -1,7 +1,7 @@
 import { PostCardList } from "../../components/posts-card-list/posts-card-list";
 import { EmptyPreview } from "../../components/empty-preview/empty-preview";
 import { Logo } from "../../components/logo/logo";
-import { ProfileButton } from '../../components/profile-button/profile-button'
+import { ProfileAvatar } from '../../components/profile-avatar/profile-avatar'
 import { PostList } from "../../types/post";
 
 function MainPage() {
@@ -38,7 +38,7 @@ function MainPage() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={false} />
+                    <ProfileAvatar active={false} />
                 </nav>
 
                 <main className="content">

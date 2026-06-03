@@ -1,30 +1,34 @@
 .layout {
     display: flex;
     width: 100%;
-    height: 100dvh;
-    background-color: #121212;
+    height: 100vh;
+    background-color: var(--background);
     overflow: hidden;
 }
 
-.workspace {
+.sidebarColumn {
     display: flex;
-    flex: 1;
+    flex-direction: column; 
+    width: 100%; 
     height: 100%;
+    background-color: var(--background);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
-.sidebar {
-    background-color: #16161c;
-    display: flex;
-    flex-direction: column;
+.chatListArea {
+    flex: 1; 
     overflow: hidden;
 }
 
 .main {
-    background-color: #0f1015;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 .empty {
@@ -33,39 +37,30 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: #6d6d6d;
+    color: var(--color-tip);
     font-size: 1rem;
 }
 
 @media screen and (max-width: 767px) {
     .layout {
-        flex-direction: column; 
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%; 
     }
 
-    .workspace {
-        height: calc(100dvh - 4rem); 
-        width: 100%;
-    }
-
-    .sidebar, .main {
-        width: 100%; 
-    }
-    
     .layout:not(.hasActiveChat) .main {
         display: none !important;
     }
 
-    .layout.hasActiveChat .sidebar {
+    .layout.hasActiveChat .sidebarColumn {
         display: none !important;
     }
 
-    .layout.hasActiveChat .workspace {
-        height: 100dvh;
-        width: 100vw;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 9999;
+    .layout.hasActiveChat .main {
+        display: flex !important;
+        width: 100%;
+        height: 100%;
     }
 
     .mobileHidden {
@@ -74,25 +69,20 @@
 }
 
 @media screen and (min-width: 768px) {
-    .layout > :global(.menu) {
-        flex-shrink: 0;
-    }
-
-    .workspace {
+    .layout {
         flex-direction: row; 
     }
 
-    .sidebar {
-        width: 340px; 
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-        flex-shrink: 0;
+    .sidebarColumn {
+        width: 340px;
+        border-right: var(--border-primary);
     }
 
     .main {
-        flex: 1; 
+        flex: 1;
     }
 
-    .layout.hasActiveChat .sidebar,
+    .layout.hasActiveChat .sidebarColumn,
     .layout:not(.hasActiveChat) .main {
         display: flex !important;
     }

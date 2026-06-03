@@ -14,6 +14,7 @@ export interface User {
     firstName: string,
     lastName: string,
     username: string,
+    publicId: string;
     status: string,
     role: string,
     faculty: string,

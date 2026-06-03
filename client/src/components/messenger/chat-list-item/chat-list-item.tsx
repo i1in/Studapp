@@ -1,17 +1,20 @@
 import React from "react";
 import { useAppSelector } from "../../../store/hooks";
+import { getFaculty } from "../../../const";
 import { Chat } from "../../../types/messenger";
 import styles from './chat-list-item.module.css';
 
 interface Props {
     chat: Chat;
     isActive: boolean;
-    onSelect: (chatId: number) => void;
+    onSelect: () => void;
 }
 
 export const ChatListItem = React.memo(({ chat, isActive, onSelect }: Props) => {
-    const presence = useAppSelector(
-        s => s.messenger.users[chat.companion?.id ?? -1]?.presence
+    const companionId = chat.companion?.id;
+
+    const presence = useAppSelector(s =>
+        companionId ? s.messenger.users[companionId]?.presence : null
     );
 
     const displayName = chat.type === 'direct'
@@ -24,16 +27,21 @@ export const ChatListItem = React.memo(({ chat, isActive, onSelect }: Props) => 
 
     const isOnline = presence?.status === 'online';
 
-    const lastText = !chat.lastMessage
-        ? 'Нет сообщений'
-        : chat.lastMessage?.type === 'system'
-            ? chat.lastMessage.text
-            : (
-                <div className={styles.message__payload}>
-                    <span className={styles.message__author}>{`${chat.lastMessage.sender?.firstName ?? ''}: `}</span>
-                    <span className={styles.preview}>{chat.lastMessage.text}</span>
-                </div>
-            );
+    const previewText = () => {
+        if (chat.id < 0) {
+            return `@${chat.companion?.username} • ${getFaculty(chat.companion?.faculty)}`
+        }
+
+        if (!chat.lastMessage) return 'Нет сообщений';
+
+        const textByMimeType: Record<string, string> = {
+            image: '📷 Фотография',
+            file: '📁 Файл',
+            text: chat.lastMessage?.text 
+        };
+
+        return textByMimeType[chat.lastMessage.type] ?? chat.lastMessage.text;
+    }
 
     const lastTime = chat.lastMessage?.createdAt
         ? new Date(chat.lastMessage.createdAt).toLocaleTimeString('ru', {
@@ -41,10 +49,12 @@ export const ChatListItem = React.memo(({ chat, isActive, onSelect }: Props) => 
         })
         : '';
 
+    const senderFirstName = chat.lastMessage?.sender?.firstName ?? (chat.lastMessage as any)?.user?.firstName;
+
     return (
         <div
             className={`${styles.item} ${isActive ? styles.active : ''}`}
-            onClick={() => onSelect(chat.id)}
+            onClick={onSelect}
         >
             <div className={styles.avatarWrap} >
                 {avatar
@@ -63,8 +73,16 @@ export const ChatListItem = React.memo(({ chat, isActive, onSelect }: Props) => 
                     <span className={styles.name}>{displayName}</span>
                     <span className={styles.time}>{lastTime}</span>
                 </div>
+
                 <div className={styles.bottom}>
-                    <span className={styles.preview}>{lastText}</span>
+                    <span className={styles.preview}>
+                        {chat.lastMessage && chat.lastMessage.type !== 'system' && chat.type !== "direct" && (
+                            <span className={styles.message__author}>
+                                {`${senderFirstName ?? 'Участник'}: `}
+                            </span>
+                        )}
+                        {previewText()}
+                    </span>
 
                     {(chat.unreadCount ?? 0) > 0 && (
                         <span className={styles.badge}>{chat.unreadCount}</span>

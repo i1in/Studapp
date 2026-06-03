@@ -1,5 +1,5 @@
 import { Logo } from "../../components/logo/logo";
-import { ProfileButton } from "../../components/profile-button/profile-button";
+import { ProfileAvatar } from "../../components/profile-avatar/profile-avatar";
 import { Faculty } from '../../components/post-card/post-faculty';
 import { ConvertTime } from "../../components/time-converter/time-converter";
 import { ShowFullAttachments } from '../../components/full-post-attachment/full-post-attachs';
@@ -89,7 +89,7 @@ function PostPage() {
                         </span>
                         <span className="label">Лента</span>
                     </a>
-                    <ProfileButton active={true} />
+                    <ProfileAvatar active={true} />
                 </nav>
 
                 <main className="content">

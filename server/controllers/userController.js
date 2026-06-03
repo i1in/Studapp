@@ -93,7 +93,7 @@ async function checkAuth(req, res) {
             username: user.username || user.publicId,
         },
         process.env.JWT_SECRET,
-        { expiresIn: '7d' }
+        { expiresIn: '31d' }
     );
 
     return res.json({
@@ -238,13 +238,14 @@ export async function getUsers(req, res, next) {
         const users = await User.findAll({
             where: {
                 [Op.or]: [
+                    { publicId: { [Op.iLike]: `%${query}%` } },
                     { username: { [Op.iLike]: `%${query}%` } },
                     { firstName: { [Op.iLike]: `%${query}%` } },
                     { lastName: { [Op.iLike]: `%${query}%` } }
                 ]
             },
-            attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'faculty', 'publicId'],
-            limit: 20,
+            attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'faculty', 'publicId', 'role'],
+            limit: 50,
             order: [['username', 'ASC']],
         });
 
@@ -257,6 +258,42 @@ export async function getUsers(req, res, next) {
         next(err);
     }
 }
+
+export async function getUsersByFaculty(req, res, next) {
+    try {
+        const faculty = String(req.query.faculty).trim();
+
+        if (!faculty || typeof faculty !== 'string') {
+            return res.json([]);
+        }
+
+        const users = await User.findAll({
+            where: {
+                faculty: faculty
+            },
+            attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'faculty', 'publicId', 'role'],
+            limit: 100,
+            order: [['firstName', 'ASC'],]
+        });
+
+        const adaptedUsers = users.map(user => {
+            try {
+                if (typeof adaptUsersToClient === 'function') {
+                    return adaptUsersToClient(user);
+                }
+            } catch (e) {
+                console.error('[Faculty Adapter Warning]: ', e);
+            }
+
+            return user.get({ plain: true });
+        })
+
+        return res.json(adaptedUsers);
+    } catch (err) {
+        console.error('[getUsersByFaculty Critical Error]:', err);
+        next(err);
+    }
+} 
 
 export function getPresence(req, res, next) {
     const userId = Number(req.params.id);
