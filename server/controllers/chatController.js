@@ -210,3 +210,20 @@ export async function deleteChat(req, res, next) {
         next(ApiError.internal('deleteChat error: ' + e));
     }
 }
+
+export async function uploadGroupAvatar(req, res, next) {
+    try {
+        if (!req.file) {
+            return next(ApiError.badRequest('GROUP_AVATAR_REQUIRED'));
+        }
+
+        const avatarUrl = `/static/${req.file.filename}`;
+
+        res.json({
+            success: true,
+            avatarUrl
+        });
+    } catch (e) {
+        next(ApiError.internal("Upload group image error: " + e));
+    }
+}

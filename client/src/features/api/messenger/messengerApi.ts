@@ -1,6 +1,7 @@
 import { api } from "../apiSlice";
 import { setChats } from "./messengerSlice";
 import { Chat } from "../../../types/messenger";
+import { MessageAttachment } from "../../../types/chat";
 
 export const messengerApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -27,7 +28,23 @@ export const messengerApi = api.injectEndpoints({
                       ]
                     : [{ type: 'Chat' as const, id: 'LIST' }],
         }),
+
+        uploadGroupAvatar: builder.mutation<{ success: boolean; avatarUrl: string }, FormData>({
+            query: (formData) => ({
+                url: 'upload/group-avatar',
+                method: 'POST',
+                body: formData,
+            }),
+        }),
+
+        uploadAttachments: builder.mutation<{ success: boolean; files: MessageAttachment[] }, FormData>({
+            query: (formData) => ({
+                url: 'upload/attachments',
+                method: 'POST',
+                body: formData
+            }),
+        }),
     }),
 });
 
-export const { useGetChatsQuery } = messengerApi;
+export const { useGetChatsQuery, useUploadGroupAvatarMutation, useUploadAttachmentsMutation } = messengerApi;

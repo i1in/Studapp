@@ -1,0 +1,9 @@
+.postTimestamp {
+    display: flex;
+    justify-content: end;
+}
+
+.timestamp {
+    font-size: .6rem;
+    color: var(--color-tip);
+}

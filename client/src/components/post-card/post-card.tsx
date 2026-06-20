@@ -1,9 +1,8 @@
-import { Faculty } from "./post-faculty";
-import { ShowAttachmentBlock } from './post-attachments'
+import { Faculty } from './post-faculty';
+import { ShowAttachmentBlock } from './post-attachments';
 import { useState } from 'react';
-import { Link } from "react-router-dom";
-import { AppRoute } from "../../const";
-import { ConvertTime } from "../time-converter/time-converter";
+import { Link, useLocation } from 'react-router-dom';
+import { ConvertTime } from '../time-converter/time-converter';
 import { useLikePostMutation } from '../../features/api/posts/postsApi';
 
 type Author = {
@@ -23,11 +22,21 @@ type PostCardProps = {
     attachmentsTotalSize: number;
     likesCount: number;
     isLikedByCurrentUser: boolean;
-    author: Author
-}
+    author: Author;
+};
 
-function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSize,
-    likesCount, isLikedByCurrentUser, author }: PostCardProps) {
+function PostCard({
+    id,
+    content,
+    createdAt,
+    attachmentsCount,
+    attachmentsTotalSize,
+    likesCount,
+    isLikedByCurrentUser,
+    author,
+}: PostCardProps) {
+    const location = useLocation();
+
     const [likePost, { isLoading }] = useLikePostMutation();
     const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
     const [localLikeCount, setLocalLikeCount] = useState(likesCount);
@@ -35,7 +44,7 @@ function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSi
     const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const postId = Number(e.currentTarget.dataset.id);
         if (!postId) return;
-    
+
         try {
             await likePost(postId).unwrap();
 
@@ -45,7 +54,7 @@ function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSi
 
                 return;
             }
-            
+
             setIsLiked(true);
             setLocalLikeCount((prev) => prev + 1);
             return;
@@ -60,30 +69,40 @@ function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSi
                 <div className="post-author__avatar">
                     <img
                         className="profile-avatar__img rounded post-avatar"
-                        src={author.avatarUrl ? author.avatarUrl : "img/defaultavatar.png"}
+                        src={
+                            author.avatarUrl
+                                ? author.avatarUrl
+                                : 'img/defaultavatar.png'
+                        }
                         alt={`${author.firstName} ${author.lastName}`}
                     />
                 </div>
                 <div className="post-author__name">
-                    <a href={`${author.username}`} className="author-name__url">
+                    <Link
+                        to={`/${author.username}`}
+                        state={{ from: location.pathname }}
+                        className="author-name__url"
+                    >
                         <p className="author-name">
                             {author.firstName} {author.lastName}
                         </p>
                         <Faculty faculty={author.faculty} />
-                    </a>
+                    </Link>
                 </div>
             </div>
 
             <div className="post-content">
                 <div className="post-content__title">
-                    <p className="content-text">
-                        {content}
-                    </p>
+                    <p className="content-text">{content}</p>
                 </div>
 
                 {attachmentsCount > 0 && (
-                    <ShowAttachmentBlock postId={id} username={author.username} 
-                                        attachmentsCount={attachmentsCount} attachmentsTotalSize={attachmentsTotalSize}/>
+                    <ShowAttachmentBlock
+                        postId={id}
+                        username={author.username}
+                        attachmentsCount={attachmentsCount}
+                        attachmentsTotalSize={attachmentsTotalSize}
+                    />
                 )}
 
                 <ConvertTime time={createdAt} />
@@ -99,7 +118,11 @@ function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSi
                             onClick={handleLike}
                             disabled={isLoading}
                         >
-                            <svg viewBox="0 0 24 24" className="reaction-icon" xmlns="http://www.w3.org/2000/svg">
+                            <svg
+                                viewBox="0 0 24 24"
+                                className="reaction-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
                                 <path
                                     d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
                                         2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09
@@ -116,14 +139,23 @@ function PostCard({ id, content, createdAt, attachmentsCount, attachmentsTotalSi
                     </div>
 
                     <div className="interaction-buttons__button comment">
-                        <a href={`${author.username}/post/${id}`} className="reaction-button" aria-pressed="false">
-                            <svg viewBox="2 2 22 22" className="reaction-icon" xmlns="http://www.w3.org/2000/svg">
+                        <Link
+                            to={`/${author.username}/post/${id}`}
+                            state={{ from: location.pathname }}
+                            className="reaction-button"
+                            aria-pressed="false"
+                        >
+                            <svg
+                                viewBox="2 2 22 22"
+                                className="reaction-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
                                 <path
                                     d="M21 6h-18c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4v4l4-4h10c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"
                                     fill="currentColor"
                                 />
                             </svg>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

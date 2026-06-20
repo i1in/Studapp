@@ -28,7 +28,21 @@ export const getFaculty = (facultyString: string | undefined) => {
 
     const facultyDict = Faculty as Record<string, string>;
     
-    const humanReadableFaculty = facultyString ? facultyDict[facultyString] : '';
+    const humanReadable = facultyString ? facultyDict[facultyString] : '';
 
-    return humanReadableFaculty;
+    return humanReadable;
+}
+
+export const getMemberRole = (roleString: string | undefined) => {
+    const Role = {
+        owner: 'Владелец',
+        admin: 'Админ',
+        member: 'Участник'
+    };
+
+    const RoleDict = Role as Record<string, string>;
+    
+    const humanReadable = roleString ? RoleDict[roleString] : '';
+
+    return humanReadable;
 }

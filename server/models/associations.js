@@ -17,6 +17,8 @@ Post.hasMany(Like, { foreignKey: 'postId', as: 'likes' });
 
 Comment.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
 Comment.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+Comment.belongsTo(Comment, { foreignKey: 'replyToId', as: 'replyTo' });
+Comment.hasMany(Comment, { foreignKey: 'replyToId', as: 'replies' });
 
 Attachment.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
 Like.belongsTo(User, { foreignKey: 'userId', as: 'author' });

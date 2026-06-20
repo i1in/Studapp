@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { upload } from '../middleware/upload.js';
 import * as MessageController from '../controllers/messageController.js'
 
 const router = Router();
@@ -9,6 +10,11 @@ router.get('/messages/:messageId/reactions', authenticateToken, MessageControlle
 
 router.post('/chats/:chatId/messages', authenticateToken, MessageController.sendMessage);
 router.post('/messages/:messageId/reactions', authenticateToken, MessageController.addReaction);
+router.post('/upload/attachments', 
+    upload.array('files', 6),
+    authenticateToken,
+    MessageController.uploadMessageFiles
+);
 
 router.put('/messages/:messageId', authenticateToken, MessageController.editMessage);
 

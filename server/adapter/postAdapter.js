@@ -35,7 +35,7 @@ export const adaptPostsToClient = (post) => {
 export const adaptFullPostToClient = (post) => {
     const baseUrl = getBaseUrl();
 
-    let avatarUrl = post.author.avatarUrl;
+    let avatarUrl = post.author?.avatarUrl;
     if (avatarUrl && !avatarUrl.startsWith('http')) {
         avatarUrl = `${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`;
     }
@@ -76,24 +76,46 @@ export const adaptFullPostToClient = (post) => {
         };
     });
 
-    const comments = (post.comments || []).map(comment => {
+    const comments = (post.comments || []).map(rawComment => {
+        const comment = typeof rawComment.get === 'function' ? rawComment.get({ plain: true }) : rawComment;
+
         let commentAvatar = comment.author?.avatarUrl;
         if (commentAvatar && !commentAvatar.startsWith('http')) {
             commentAvatar = `${commentAvatar.startsWith('/') ? '' : '/'}${commentAvatar}`;
         }
 
+        let replyToPayload = null;
+        if (comment.replyTo) {
+            replyToPayload = {
+                id: comment.replyTo.id,
+                content: comment.replyTo.content,
+                authorId: comment.replyTo.authorId,
+                author: {
+                    id: comment.replyTo.author?.id,
+                    firstName: comment.replyTo.author?.firstName,
+                    lastName: comment.replyTo.author?.lastName,
+                    username: comment.replyTo.author?.username || null
+                }
+            };
+        }
+
         return {
             id: comment.id,
+            postId: comment.postId,
+            authorId: comment.authorId,
+            replyToId: comment.replyToId || null,
             content: comment.content,
             createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt || comment.createdAt,
             author: {
                 id: comment.author?.id,
                 firstName: comment.author?.firstName,
                 lastName: comment.author?.lastName,
-                faculty: comment.author?.faculty,
+                faculty: comment.author?.faculty || '',
                 username: comment.author?.username || comment.author?.publicId || null,
                 avatarUrl: commentAvatar || null
-            }
+            },
+            replyTo: replyToPayload
         };
     });
 
@@ -105,11 +127,11 @@ export const adaptFullPostToClient = (post) => {
         updatedAt: post.updatedAt,
 
         author: {
-            id: post.author.id,
-            firstName: post.author.firstName,
-            lastName: post.author.lastName,
-            username: post.author.username || post.author.publicId,
-            faculty: post.author.faculty,
+            id: post.author?.id,
+            firstName: post.author?.firstName,
+            lastName: post.author?.lastName,
+            username: post.author?.username || post.author?.publicId,
+            faculty: post.author?.faculty,
             avatarUrl
         },
 
@@ -118,6 +140,7 @@ export const adaptFullPostToClient = (post) => {
         comments
     };
 };
+
 
 
 export const adaptViewLikesToClient = (likes) => {

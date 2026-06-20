@@ -5,7 +5,20 @@ type MessageSenderPayload = {
     avatarUrl: string;
 }
 
-type MessagePayload = {
+export type MessageAttachment = {
+    id: number;
+    messageId: number;
+    url: string;
+    originalName: string;
+    mimeType: string;
+    size: number;
+    width: number | null;
+    height: number | null;
+    thumbnailUrl: string | null;
+    sortOrder: number;
+};
+
+export type MessagePayload = {
     id: number;
     chatId: number;
     senderId: number;
@@ -16,7 +29,7 @@ type MessagePayload = {
     createdAt: string;
     sender: MessageSenderPayload;
     replyToId: number | null;
-    attachments: any[];
+    attachments: MessageAttachment[];
     reactions: MessageReactPayload[];
 }
 

@@ -1,18 +1,23 @@
 import { useEffect } from 'react';
-import { useAppDispatch } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 
 import { connectSocket, disconnectSocket } from '../../socket';
 import { registerCoreListeners } from './registerCoreSocket';
 import { registerChatListListeners } from '../chat/chat-list/registerChatListSocket';
-import { selectIsAuthenticated } from '../../../../features/api/auth/authSlice';
+import {
+    selectIsAuthenticated,
+    selectToken,
+} from '../../../../features/api/auth/authSlice';
 
 export function useCoreSocket() {
     const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const token = useAppSelector(selectToken);
 
     useEffect(() => {
-        if (!selectIsAuthenticated) return;
+        if (!isAuthenticated || !token) return;
 
-        connectSocket();
+        connectSocket(token);
 
         const cleanupCore = registerCoreListeners(dispatch);
         const cleanupChatList = registerChatListListeners(dispatch);
@@ -22,6 +27,6 @@ export function useCoreSocket() {
             cleanupChatList();
 
             disconnectSocket();
-        }
-    }, [dispatch, selectIsAuthenticated]);
+        };
+    }, [dispatch, isAuthenticated, token]);
 }

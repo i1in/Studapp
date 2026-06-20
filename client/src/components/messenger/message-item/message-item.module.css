@@ -47,10 +47,27 @@
     min-width: 0;
 }
 
-.senderName {
+.senderInfo {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    gap: 8px;
+}
+
+.senderFullName {
+    display: flex;
+    gap: 4px;
+}
+
+.senderFirstName, 
+.senderlastName {
     font-size: 0.74rem;
     color: var(--color-secondary);
-    padding-left: 4px;
+}
+
+.senderRole {
+    font-size: 0.6rem;
+    color: var(--color-tip);
 }
 
 .reply {
@@ -81,6 +98,8 @@
 }
 
 .bubble {
+    display: flex;
+    flex-direction: column;
     padding: 8px 12px;
     border-radius: 14px;
     font-size: 0.88rem;
@@ -103,18 +122,138 @@
     border-bottom-left-radius: 4px;
 }
 
+.messageAttachmentsBlock {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 6px;
+    overflow-x: auto;
+}
+
+.imagesGridRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.imageMiniWrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.attachedImageMini {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.12s, transform 0.12s;
+}
+
+.attachedImageMini:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.docsStackColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.docAttachmentLink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    text-decoration: none;
+    width: 100%;
+    max-width: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    transition: background-color 0.12s;
+}
+
+.docAttachmentLink:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.docFileIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background-color: var(--primary, #202020);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.docExtBadge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #3b82f6;
+    letter-spacing: 0.5px;
+}
+
+.docFileInfo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.docOriginalName {
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.docFileSize {
+    font-size: 0.7rem;
+    color: var(--color-tip, #6e6e6e);
+    margin-top: 1px;
+}
+
+.textContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    
+    width: 100%;
+    gap: 2px;
+}
+
 .text {
     flex: 1;
+    text-align: left; 
 
     white-space: pre-wrap;
     word-break: break-word;
 }
 
 .meta {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
+    color: var(--color-tip, #6e6e6e);
     opacity: 0.6;
     flex-shrink: 0;
     white-space: nowrap;
+    text-align: right; 
+    user-select: none;
 }
 
 .edited {
@@ -130,73 +269,12 @@
     border-radius: 20px;
 }
 
-.contextMenu {
-    position: fixed;
-    border: 1px solid var(--secondary);
-    border-radius: var(--border-radius);
-    padding: 4px 0;
-    gap: .2rem;
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    width: 160px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-
-    animation: menuFadeOut 0.12s cubic-bezier(0.4, 0, 1, 1) forwards;
-    will-change: transform, opacity;
-    
-    transform-origin: top left;
-    opacity: 0;
-
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(var(--primary), 0.6);
-}
-
-.contextMenu.visible {
-    animation: menuFadeIn 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.contextBtns {
-    display: flex;
-    flex-direction: column;
-    padding: 0 4px;
-}
-
-.menuBtn {
-    background: none;
-    border: none;
-    color: var(--color-primary);
-    padding: 8px 12px;
-    text-align: left;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: var(--border-radius);
-    transition: background-color 0.15s;
-    width: 100%;
-}
-
-.deleteBtn {
-    color: var(--color-danger) !important;
-}
-
-.menuBtn:hover {
-    background-color: rgba(var(--primary-rgb), 0.4);
-    color: var(--color-primary);
-}
-
-.menuBtn.deleteBtn:hover {
-    color: rgb(255, 77, 77) !important;
-    background-color: rgba(255, 77, 77, 0.15) !important;
-}
-
 .reactionRow {
     display: flex;
     justify-content: flex-start;
     gap: .4rem;
-    border-bottom: 1px solid var(--secondary);
     overflow-x: auto;
-    padding: 4px 6px;
+    padding: 4px;
 }
 
 .reactionRow .menuBtn {
@@ -314,26 +392,4 @@
 .deployedReactions .myReaction .avatarStack .avatarWrap :is(.avatar, .avatarFallback) {
     border: 1.5px solid var(--color-tip) !important;
     border-radius: var(--border-radius) !important;
-}
-
-@keyframes menuFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(4px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes menuFadeOut {
-    from {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: scale(0.93) translateY(2px);
-    }
 }

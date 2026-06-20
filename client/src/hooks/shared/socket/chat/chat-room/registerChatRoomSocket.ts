@@ -1,4 +1,5 @@
 import { setHistory } from "../../../../../features/api/messenger/messagesSlice";
+import { MessagePayload } from "../../../../../types/chat";
 import { AppDispatch } from "../../../../../store/store";
 import { socket } from "../../../socket";
 

@@ -1,0 +1,415 @@
+.wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: .4rem;
+    background-color: var(--background);
+
+    user-select: none;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0.85rem 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: .4rem; 
+}
+
+.headerBtn {
+    background: none;
+    border: none;
+    color: var(--button-inactive);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+    width: 42px;
+    height: 42px;
+}
+
+.headerBtn:hover {
+    background-color: var(--button-background);
+    color: var(--color-primary);
+}
+
+.createSubmitBtn {
+    background-color: var(--button-background);
+    border: none;
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s, transform 0.1s, opacity 0.15s;
+}
+
+.createSubmitBtn:hover:not(:disabled) {
+    background-color: var(--button-active);
+    transform: scale(1.05);
+}
+
+.createSubmitBtn:disabled {
+    color: var(--color-tip);
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+}
+
+.groupInfoBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem;
+}
+
+.groupInfoInputs {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 1.2rem;
+    gap: .6rem;
+    border-radius: var(--border-radius);
+    background-color: rgba(var(--primary-rgb), 0.2);
+    border-bottom: var(--border-primary);
+}
+
+.avatarPlaceholder {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    
+    background-color: var(--secondary, #282828);
+    color: var(--color-secondary, #b6b6b6);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    
+    transition: background-color 0.15s, color 0.15s, transform 0.1s;
+    border: var(--border-primary);
+}
+
+.avatarPlaceholder:hover {
+    background-color: var(--primary-active, #343434);
+    color: var(--color-primary, #f8f8f8);
+    transform: scale(1.02);
+}
+
+.avatarPlaceholder:active {
+    transform: scale(0.98);
+}
+
+.groupPreviewImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.loaderMini {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    transform: translate(-50%, -50%);
+
+    border: 3px solid rgba(255, 255, 255, .1);
+    border-top: 3px solid var(--color-primary);
+    border-radius: 50%;
+
+    animation: spinHistoryLoader 0.8s linear infinite;
+    pointer-events: none;
+}
+
+.groupNameInput {
+    height: 36px;
+    flex: 1;
+    background: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: var(--border-radius);
+    outline: none;
+    color: var(--color-primary);
+    font-size: .8rem;
+    padding: .6rem;
+    transition: border-color 0.2s;
+}
+
+.groupNameInput:focus {
+    border: 1px solid var(--color-tip);
+}
+
+.selectedCarousel {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    overflow-x: auto; 
+    border-bottom: var(--border-primary);
+    background-color: rgba(var(--primary-rgb), 0.05);
+    animation: carouselFadeIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.selectedCarousel::-webkit-scrollbar {
+    height: 3px;
+}
+.selectedCarousel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.carouselItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 54px;
+    flex-shrink: 0;
+}
+
+.avatarContainer {
+    position: relative;
+    width: 44px;
+    height: 44px;
+}
+
+.userAvatar, .userFallback {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userFallback {
+    background-color: var(--secondary);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.removeUserBadgeBtn {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    border: 1.5px solid var(--background);
+    color: var(--color-primary);
+    font-size: 0.6rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.1s, transform 0.1s;
+}
+
+.removeUserBadgeBtn:hover {
+    background-color: var(--color-danger);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.userNameSummary {
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.searchBlock {
+    padding: 0.5rem 1rem;
+    background-color: var(--background);
+}
+
+.searchInnerWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.panelSearchInput {
+    width: 100%;
+    background-color: var(--secondary);
+    border: var(--border-primary);
+    border-radius: calc(var(--border-radius) - 4px);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--color-primary);
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.panelSearchInput:focus {
+    border-color: var(--color-accent);
+}
+
+.clearSearchBtn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--color-tip);
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.studentsVerticalList {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.studentsVerticalList::-webkit-scrollbar {
+    width: 4px;
+}
+.studentsVerticalList::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.studentRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 1rem;
+    cursor: pointer;
+    transition: background-color 0.12s;
+    user-select: none;
+}
+
+.studentRow:hover {
+    background-color: rgba(var(--primary-rgb), 0.3);
+}
+
+.rowSelected {
+    background-color: rgba(var(--primary-rgb), 0.15);
+}
+
+.rowMetadataBlock {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.rowAvatarFrame {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.rowImg, .rowFallback {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rowFallback {
+    background-color: var(--secondary);
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.rowTextData {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.rowFullName {
+    font-size: 0.95rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rowFacultyName {
+    font-size: 0.75rem;
+    color: var(--color-tip);
+}
+
+.circleCheckbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--color-tip);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                border-color 0.18s ease;
+    flex-shrink: 0;
+}
+
+.circleCheckbox.checked {
+    background-color: var(--button-active);
+    animation: checkboxPop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
+}
+
+@keyframes checkboxPop {
+    0% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}
+
+.panelLoading, .panelListEmpty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-tip);
+    font-size: 0.9rem;
+}
+
+@keyframes carouselFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinHistoryLoader {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

@@ -23,8 +23,8 @@ export const socketEmitters = {
         socket.emit('kick_or_leave_chat', { chatId });
     },
 
-    sendMessage(chatId: number, text: string, replyToId?: number) {
-        socket.emit('message_send', { chatId, text, replyToId });
+    sendMessage(chatId: number, text: string, attachments: any[], replyToId?: number) {
+        socket.emit('message_send', { chatId, text, replyToId, attachments });
     },
 
     editMessage(messageId: number, text: string) {

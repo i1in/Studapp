@@ -12,7 +12,7 @@
 }
 
 .item:hover:not(.active) { 
-    background: var(--button-primary); 
+    background: var(--button-background); 
 }
 .active { 
     background: var(--primary-active); 

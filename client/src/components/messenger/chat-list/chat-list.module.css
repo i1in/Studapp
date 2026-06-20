@@ -10,7 +10,7 @@
 }
 
 .title {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-primary);
     padding: 0.85rem 0;
@@ -19,14 +19,20 @@
 .header {
     display: flex;
     align-items: center;
-    gap: .4rem;
+    justify-content: space-between;
     padding: 0 1rem;
 }
 
-.hamburgerBtn {
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: .4rem; 
+}
+
+.headerBtn {
     background: none;
     border: none;
-    color: var(--color-tip);
+    color: var(--button-inactive);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -38,13 +44,13 @@
     height: 42px;
 }
 
-.hamburgerBtn:hover {
-    background-color: var(--primary-active);
+.headerBtn:hover {
+    background-color: var(--button-background);
     color: var(--color-primary);
 }
 
 .searchHeader {
-    padding: 0 1rem .85rem;
+    padding: 0rem 1rem .8rem;
     flex-shrink: 0;
 
     border-bottom: 1px solid rgb(var(--color-primary));

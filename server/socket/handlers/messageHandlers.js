@@ -8,27 +8,60 @@ import User from '../../models/users.js';
 import { Op } from 'sequelize';
 
 export function registerMessageHandlers(io, socket) {
-    socket.on('message_send', async ({ chatId, text, type = 'text', replyToId }) => {
+    socket.on('message_send', async ({ chatId, text, type = 'text', replyToId, attachments }) => {
         try {
-            if (!text.trim()) return socket.emit('error', { message: 'MESSAGE_EMPTY' });
+            const myId = socket.user.id;
+            const hasAttachments = attachments && attachments.length > 0;
+
+            if (!text.trim() && !hasAttachments) {
+                return socket.emit('error', { message: 'MESSAGE_EMPTY' });
+            }
 
             const isMember = await ChatMember.findOne({
                 where: { chatId, userId: socket.user.id, leftAt: null },
             });
             if (!isMember) return socket.emit('error', { message: 'USER_NOT_MEMBER' });
 
+            let finalType = type;
+            if (hasAttachments) finalType = 'file';
+
             const message = await Message.create({
                 chatId,
-                senderId: socket.user.id,
-                text: text.trim(),
-                type,
+                senderId: myId,
+                text: text ? text.trim() : '',
+                type: finalType,
                 replyToId: replyToId || null,
             });
+
+            if (hasAttachments) {
+                const preparedAttachments = attachments.map((file, index) => ({
+                    messageId: message.id,
+                    url: file.url,
+                    originalName: file.originalName,
+                    mimeType: file.mimeType,
+                    size: Number(file.size),
+                    width: file.width || null,
+                    height: file.height || null,
+                    thumbnailUrl: file.thumbnailUrl || null,
+                    sortOrder: file.sortOrder ?? index
+                }));
+
+                await MessageAttachment.bulkCreate(preparedAttachments);
+            }
+
+            await Chat.update(
+                { lastMessageId: message.id },
+                { where: { id: chatId } }
+            );
 
             const full = await Message.findByPk(message.id, {
                 include: [
                     { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] },
-                    { model: MessageAttachment, as: 'attachments' },
+                    { 
+                        model: MessageAttachment, 
+                        as: 'attachments',
+                        attributes: ['id', 'url', 'originalName', 'mimeType', 'size', 'width', 'height', 'thumbnailUrl', 'sortOrder']
+                    },
                     {
                         model: Message, as: 'replyTo',
                         include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
@@ -36,11 +69,9 @@ export function registerMessageHandlers(io, socket) {
                 ],
             });
 
-            await Chat.update({ lastMessageId: message.id }, { where: { id: chatId } });
+            io.to(String(chatId)).emit('new_message', full.get({ plain: true }));
 
-            io.to(String(chatId)).emit('new_message', full);
-
-            console.log(`[Send Message] userId=${socket.user.id} chatId=${chatId} messageId=${message.id}`);
+            console.log(`[Send Message] userId=${myId} chatId=${chatId} messageId=${message.id}. Attachments: ${hasAttachments ? attachments.length : 0}`);
         } catch (e) {
             console.error('[Send Message error]: ' + e);
             socket.emit('error', { message: 'SERVER_ERROR' });

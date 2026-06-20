@@ -29,9 +29,10 @@ export async function getMessages(req, res, next) {
                     as: 'sender',
                     attributes: ['id', 'firstName', 'lastName', 'avatarUrl'],
                 },
-                {
-                    model: MessageAttachment,
+                { 
+                    model: MessageAttachment, 
                     as: 'attachments',
+                    attributes: ['id', 'url', 'originalName', 'mimeType', 'size', 'width', 'height', 'thumbnailUrl', 'sortOrder']
                 },
                 {
                     model: MessageReaction,
@@ -201,5 +202,33 @@ export async function removeReaction(req, res, next) {
         return res.status(204).send();
     } catch (e) {
         next(ApiError.internal('removeReaction error: ' + e));
+    }
+}
+
+export async function uploadMessageFiles(req, res, next) {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return next(ApiError.badRequest('FILES_REQUIRED'));
+        } 
+
+        const uploadedFiles = req.files.map((file, index) => ({
+            url: `/static/${file.filename}`,
+            originalName: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+            
+            width: null,
+            height: null,
+            thumbnailUrl: null,
+            
+            sortOrder: index 
+        }));
+
+        res.json({
+            success: true,
+            files: uploadedFiles,
+        });
+    } catch (e) {
+        next(ApiError.internal("Upload attachments error" + e));
     }
 }

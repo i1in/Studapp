@@ -147,7 +147,8 @@ export async function getFullPost(req, res, next) {
                     model: Like,
                     as: 'likes',
                     include: [
-                        { model: User, 
+                        { 
+                            model: User, 
                             as: 'author', 
                             attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'publicId'] 
                         }
@@ -158,12 +159,23 @@ export async function getFullPost(req, res, next) {
                     model: Comment,
                     as: 'comments',
                     include: [
-                        { model: User, 
+                        { 
+                            model: User, 
                             as: 'author', 
                             attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'publicId', 'faculty'] 
+                        },
+                        {
+                            model: Comment,
+                            as: 'replyTo',
+                            include: [
+                                {
+                                    model: User,
+                                    as: 'author',
+                                    attributes: ['id', 'firstName', 'lastName', 'username']
+                                }
+                            ]
                         }
-                    ],
-                    attributes: ['id', 'content', 'createdAt']
+                    ]
                 }
             ]
         });
@@ -173,14 +185,16 @@ export async function getFullPost(req, res, next) {
         }
 
         const adaptedPost = adaptFullPostToClient(post);
-
         return res.status(200).json(adaptedPost);
 
     } catch (error) {
+        console.error('============ [GET FULL POST ERROR CRASH] ============');
+        console.error(error);
+        console.error('=====================================================');
+        
         return next(ApiError.internal('failed to fetch post: ' + error.message));
     }
 }
-
 
 export async function deletePost(req, res, next) {
     const __filename = fileURLToPath(import.meta.url);
@@ -331,7 +345,7 @@ export async function commentPost(req, res, next) {
     try {
         const postId = req.params.id;
         const authorId = req.user.id;
-        const { content } = req.body;
+        const { content, replyToId } = req.body;
 
         if (!content || !content.trim()) {
             return next(ApiError.badRequest('COMMENT_IS_NULL'));
@@ -342,16 +356,43 @@ export async function commentPost(req, res, next) {
             return next(ApiError.badRequest('POST_NOT_FOUND'));
         }
 
+        if (replyToId) {
+            const parentComment = await Comment.findByPk(replyToId);
+            if (!parentComment) {
+                return next(ApiError.badRequest('PARENT_COMMENT_NOT_FOUND'));
+            }
+        }
+
         const comment = await Comment.create({
             postId,
             authorId,
-            content
+            content,
+            replyToId: replyToId || null,
+        });
+
+        const full = await Comment.findByPk(comment.id, {
+            include: [
+                {
+                    model: User,
+                    as: 'author',
+                    attributes: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'faculty']
+                },
+                {
+                    model: Comment,
+                    as: 'replyTo',
+                    include: [{
+                        model: User,
+                        as: 'author',
+                        attributes: ['id', 'firstName', 'lastName', 'username']
+                    }]
+                }
+            ]
         });
 
         return res.status(201).json({
             success: true,
             message: 'COMMENT_ADDED',
-            comment
+            comment: full
         });
     } catch (error) {
         return next(ApiError.internal('failed to comment post: ' + error));

@@ -70,11 +70,64 @@ async function login(req, res, next) {
 
         if (!isValid) return next(ApiError.badRequest('PASSWORD_IS_WRONG'));
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const accessToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        )
 
-        res.json({ token });
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '30d' },
+        )
+
+        await user.update({ refreshToken });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        })
+
+        res.json({ token: accessToken });
     } catch (error) {
         next(ApiError.internal('authorization error: ' + error))
+    }
+}
+
+async function refresh(req, res, next) {
+    try {
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (!refreshToken) {
+            return next(ApiError.unauthorized('NO_REFRESH_TOKEN'));
+        }
+
+        let decoded;
+
+        try {
+            decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        } catch (error) {
+            return next(ApiError.unauthorized('INVALID_REFRESH_TOKEN'));
+        }
+
+        const user = await User.findByPk(decoded.id);
+
+        if (!user || user.refreshToken !== refreshToken) {
+            return next(ApiError.unauthorized('MISMATCH_REFRESH_TOKEN'));
+        }
+
+        const accessToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' },
+        )
+
+        res.json({ token: accessToken });
+    } catch (error) {
+        next(ApiError.internal('refresh error: ' + error))
     }
 }
 
@@ -110,7 +163,21 @@ async function checkAuth(req, res) {
 }
 
 async function logout(req, res) {
-    res.status(204).send();
+    try {
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (refreshToken) {
+            await User.update(
+                { refreshToken: null },
+                { where: { refreshToken } }
+            )
+        }
+
+        res.clearCookie('refreshToken');
+        res.status(204).send();
+    } catch (error) {
+        next(ApiError.internal('logout error: ' + error))
+    }
 }
 
 async function getUserData(req, res, next) {
@@ -319,4 +386,4 @@ export function getPresence(req, res, next) {
     })
 }
 
-export { registration, login, checkAuth, logout, uploadAvatar, editStatus, editUsername, getUser, getUserData };
+export { registration, login, refresh, checkAuth, logout, uploadAvatar, editStatus, editUsername, getUser, getUserData };

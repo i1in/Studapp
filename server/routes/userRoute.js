@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { uploadFile, uploadImage } from '../middleware/upload.js'
 import {
-        registration, login, checkAuth, logout,
+        registration, login, refresh, checkAuth, logout,
         uploadAvatar, editStatus, editUsername, getUser, getUserData,
         getUsers, getPresence, getUsersByFaculty
 } from '../controllers/userController.js'
@@ -10,6 +10,8 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 const router = new Router();
 router.post('/register', registration);
 router.post('/login', login);
+router.post('/refresh', refresh);
+router.post('/logout', logout);
 
 router.get('/u/:username', authenticateToken, getUser);
 router.get('/user', authenticateToken, getUserData);
@@ -25,6 +27,5 @@ router.post('/edit/status', authenticateToken, editStatus);
 router.post('/edit/username', authenticateToken, editUsername);
 
 router.get('/login', authenticateToken, checkAuth);
-router.delete('/logout', logout);
 
 export default router;

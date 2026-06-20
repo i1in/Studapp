@@ -24,6 +24,24 @@
     min-height: 40px;
 }
 
+.fileInputLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+.fileInputLabel:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--color-primary);
+}
+
 .input {
     flex: 1;
     background: var(--primary);
@@ -62,6 +80,87 @@
 
 .btn:hover    { opacity: 0.85; }
 .btn:disabled { opacity: 0.35; cursor: default; }
+
+.previewCarousel::-webkit-scrollbar {
+    height: 3px;
+}
+.previewCarousel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.previewCard {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.previewImg {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.previewDocIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.docExtLabel {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+    letter-spacing: 0.5px;
+}
+
+.removePreviewItemBtn {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    border: 1px solid var(--background);
+    color: var(--color-primary);
+    font-size: 0.55rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.1s, transform 0.1s;
+    z-index: 10;
+}
+
+.removePreviewItemBtn:hover {
+    background-color: var(--color-danger);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.previewFileNameSummary {
+    display: none;
+}
+
+.inputErrorMsg {
+    font-size: 0.8rem;
+    color: var(--color-danger);
+    padding: 2px 0;
+    font-weight: 500;
+}
 
 .editBar {
     display: flex;
@@ -107,5 +206,10 @@
 
 @keyframes editSlideUp {
     from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes previewSlideIn {
+    from { transform: translateY(10px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }

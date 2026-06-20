@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { uploadFile, uploadImage } from '../middleware/upload.js';
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import * as chatController from "../controllers/chatController.js";
 
@@ -10,6 +11,11 @@ router.get('/chats/:chatId/members', authenticateToken, chatController.getChatMe
 
 router.post('/chats', authenticateToken, chatController.createChat);
 router.post('/chats/:chatId/members', authenticateToken, chatController.addMember);
+router.post('/upload/group-avatar', 
+    uploadImage.single('avatar'),
+    authenticateToken,
+    chatController.uploadGroupAvatar
+);
 
 router.put('/chats/:chatId', authenticateToken, chatController.updateChat);
 

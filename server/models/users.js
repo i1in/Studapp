@@ -85,6 +85,10 @@ User.init({
         type: DataTypes.STRING,
         allowNull: true
     },
+    refreshToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 }, {
     tableName: 'users',
     modelName: 'User',

@@ -1,0 +1,6 @@
+.authorFaculty {
+    display: flex;
+    align-items: center;
+    font-size: .7rem;
+    color: var(--color-secondary);
+}

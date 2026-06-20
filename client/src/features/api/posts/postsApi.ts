@@ -73,15 +73,16 @@ export const postsApi = api.injectEndpoints({
                 { type: 'Like', id: postId }
             ]
         }),
-        postComment: builder.mutation<Comment, { 
-            username: string; id: number; content: string;
-        }>({
-            query: ({username, id, content}) => ({
+        postComment: builder.mutation<
+            { success: boolean; comment: any },
+            { username: string; id: number; content: string; replyToId?: number }
+        >({
+            query: ({ username, id, content, replyToId }) => ({
                 url: `/${username}/posts/${id}/comments`,
                 method: 'POST',
-                body: { content }
+                body: { content, replyToId } 
             }),
-            invalidatesTags: [{type: 'Comment'}]
+            invalidatesTags: [{ type: 'Comment' }]
         })
     }),
 });

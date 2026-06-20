@@ -1,0 +1,82 @@
+.menu[role="menu"] {
+    position: fixed;
+    border: 1px solid var(--secondary);
+    border-radius: var(--border-radius);
+    padding: 4px;
+    gap: .2rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    width: 160px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+    animation: menuFadeOut 0.12s cubic-bezier(0.4, 0, 1, 1) forwards;
+    will-change: transform, opacity;
+    
+    transform-origin: top left;
+    opacity: 0;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(var(--primary), 0.6);
+}
+
+.menu.visible[role="menu"] {
+    animation: menuFadeIn 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.menu [role="menuitem"] {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: var(--color-secondary);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: calc(var(--border-radius) - 4px);
+    transition: background-color 0.15s, color 0.15s;
+    width: 100%;
+}
+
+.menu [role="menuitem"]:hover {
+    background-color: rgba(var(--primary-rgb), 0.4);
+    color: var(--color-primary);
+}
+
+.menu [role="menuitem"][data-danger="true"] {
+    color: var(--color-danger) !important;
+}
+
+.menu [role="menuitem"][data-danger="true"]:hover {
+    color: rgb(255, 77, 77) !important;
+    background-color: rgba(255, 77, 77, 0.15) !important;
+}
+
+.menu [role="divider"] {
+    border: .5px solid var(--secondary);
+    width: 100%;
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes menuFadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.93) translateY(2px);
+    }
+}

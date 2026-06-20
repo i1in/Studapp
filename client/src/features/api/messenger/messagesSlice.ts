@@ -1,4 +1,5 @@
 import { createEntityAdapter, createSelector, EntityState, createSlice, PayloadAction, isAction } from "@reduxjs/toolkit";
+import { MessagePayload } from "../../../types/chat";
 
 const messagesAdapter = createEntityAdapter<MessagePayload, number>({
     selectId: (message) => message.id,

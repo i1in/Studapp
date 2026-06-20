@@ -1,6 +1,7 @@
 import ChatMember from "../../models/chatMember.js";
 import Message from "../../models/message.js";
 import MessageReaction from "../../models/messagereactions.js";
+import MessageAttachment from '../../models/messageattachments.js';
 import Chat from "../../models/chat.js";
 import User from "../../models/users.js";
 
@@ -28,7 +29,7 @@ export async function emitSystemMessage(io, { chatId, event, actorId, targetId =
             text = `${actor.firstName} ${actor.lastName} покинул группу.`;
             break;
         case 'member_added':
-            if (!target) return; // ничего не делаем, если нет target
+            if (!target) return;
             text = `${actor.firstName} ${actor.lastName} добавил ${target.firstName} ${target.lastName}`;
             break;
         case 'member_removed':
@@ -171,6 +172,11 @@ export function registerChatHandlers(io, socket) {
                         attributes: ['id', 'firstName', 'lastName', 'avatarUrl'], 
                         required: false 
                     },
+                    { 
+                        model: MessageAttachment, 
+                        as: 'attachments',
+                        attributes: ['id', 'url', 'originalName', 'mimeType', 'size', 'width', 'height', 'thumbnailUrl', 'sortOrder']
+                    },
                     {
                         model: MessageReaction,
                         as: 'reactions',
@@ -195,7 +201,7 @@ export function registerChatHandlers(io, socket) {
         }
     });
 
-    socket.on('create_chat', async ({ type, userIds, name, firstMessageText }) => {
+    socket.on('create_chat', async ({ type, userIds, name, avatarUrl, firstMessageText }) => {
         try {
             const myId = socket.user.id;
             const targetType = type || 'direct';
@@ -218,8 +224,6 @@ export function registerChatHandlers(io, socket) {
                     ]
                 });
 
-                let isNewChat = false;
-
                 if (!chat) {
                     isNewChat = true;
 
@@ -233,75 +237,115 @@ export function registerChatHandlers(io, socket) {
                         { chatId: chat.id, userId: targetUserId, role: 'member' }
                     ]);
                 }
+            } else if (targetType === 'group' || targetType === 'channel') {
+                isNewChat = true;
 
-                socket.join(String(chat.id));
+                const provideIds = Array.isArray(userIds) ? userIds.map(Number) : [];
+                finalTargetUserIds = Array.from(new Set(provideIds)).filter(id => id !== myId);
 
-                const targetSocketRoom = io.sockets.adapter.rooms.get(`user_${targetUserId}`);
+                if (!name || !name.trim()) {
+                    return socket.emit('error', { message: 'CHAT_NAME_REQUIRED' });
+                }
+
+                chat = await Chat.create({
+                    type: targetType,
+                    name: name.trim(),
+                    avatarUrl: avatarUrl || null,
+                    createdBy: myId
+                });
+
+                const membersData = [
+                    { chatId: chat.id, userId: myId, role: 'owner' },
+                    ...finalTargetUserIds.map(id => ({
+                        chatId: chat.id,
+                        userId: id,
+                        role: 'member',
+                    }))
+                ];
+
+                await ChatMember.bulkCreate(membersData);
+            } else {
+                return socket.emit('error', { message: 'INVALID_CHAT_TYPE' });
+            }
+
+            socket.join(String(chat.id));
+
+            finalTargetUserIds.forEach(targetId => {
+                const targetSocketRoom = io.sockets.adapter.rooms.get(`user_${targetId}`);
+
                 if (targetSocketRoom) {
                     targetSocketRoom.forEach(socketId => {
                         const clientSocket = io.sockets.sockets.get(socketId);
                         if (clientSocket) {
                             clientSocket.join(String(chat.id));
                         }
-                    });
+                    })
                 }
+            });
 
-                let lastMessagePayload = null;
+            let lastMessagePayload = null;
 
-                if (firstMessageText && firstMessageText.trim()) {
-                    const message = await Message.create({
-                        chatId: chat.id,
-                        senderId: myId,
-                        text: firstMessageText.trim(),
-                        type: 'text',
-                        replyToId: null
-                    });
-
-                    const fullMessage = await Message.findByPk(message.id, {
-                        include: [
-                            { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }
-                        ]
-                    });
-
-                    lastMessagePayload = fullMessage.get({ plain: true });
-
-                    await chat.update({ lastMessageId: message.id });
-
-                    io.to(String(chat.id)).emit('new_message', lastMessagePayload);
-                }
-
-
-                const fullChatData = await Chat.findByPk(chat.id, {
-                    include: [{
-                        model: ChatMember, as: 'allMembers', attributes: ['userId', 'role'],
-                        include: [{ model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'username', 'faculty', 'role', 'publicId'] }]
-                    }]
+            if (firstMessageText && firstMessageText.trim()) {
+                const message = await Message.create({
+                    chatId: chat.id,
+                    senderId: myId,
+                    text: firstMessageText.trim(),
+                    type: 'text',
+                    replyToId: null,
                 });
 
-                const chatPayload = fullChatData.get({ plain: true });
+                const fullMessage = await Message.findByPk(message.id, {
+                    include: [
+                        { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'username'] },
+                    ]
+                });
 
-                const companionForMe = chatPayload.allMembers.find(m => m.userId === Number(targetUserId));
-                if (companionForMe && companionForMe.user) {
-                    chatPayload.companion = companionForMe.user;
-                }
+                lastMessagePayload = fullMessage.get({ plain: true });
+                await chat.update({ lastMessageId: message.id });
 
-                chatPayload.lastMessage = lastMessagePayload;
-                chatPayload.unreadCount = 0;
-
-                socket.emit('new_chat', chatPayload);
-
-                const chatPayloadForTarget = { ...chatPayload };
-                const companionForTarget = chatPayload.allMembers.find(m => m.userId === myId);
-                if (companionForTarget && companionForTarget.user) {
-                    chatPayloadForTarget.companion = companionForTarget.user;
-                }
-
-                chatPayloadForTarget.unreadCount = isNewChat ? 1 : 0;
-
-                io.to(`user_${targetUserId}`).emit('new_chat', chatPayloadForTarget);
-
-                socket.emit('chat_create_success', { chatId: chat.id });
+                io.to(String(chat.id)).emit('new_message', lastMessagePayload);
             }
+
+            const fullChatData = await Chat.findByPk(chat.id, {
+                include: [{
+                    model: ChatMember, as: 'allMembers', attributes: ['userId', 'role'],
+                    include: [{
+                        model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'username', 'faculty', 'role', 'publicId']
+                    }]
+                }]
+            })
+
+            const basePayload = fullChatData.get({ plain: true });
+            basePayload.lastMessage = lastMessagePayload;
+
+            const myPayload = { ...basePayload };
+            if (targetType === 'direct') {
+                const companionUser= myPayload.allMembers.find(m => m.userId === finalTargetUserIds[0]);
+                if (companionUser && companionUser.user) {
+                    myPayload.companion = companionUser.user;
+                }
+            }
+
+            myPayload.unreadCount = 0;
+            socket.emit('new_chat', myPayload);
+
+            finalTargetUserIds.forEach(targetId => {
+                const targetPayload = { ...basePayload };
+
+                if (targetType === 'direct') {
+                    const companionUser = targetPayload.allMembers.find(m => m.userId === myId);
+                    if (companionUser && companionUser.user) {
+                        targetPayload.companion = companionUser.user;
+                    }
+                }
+
+                targetPayload.unreadCount = isNewChat ? 1 : 0;
+
+                io.to(`user_${targetId}`).emit('new_chat', targetPayload);
+            });
+
+            socket.emit('chat_create_success', { chatId: chat.id });
+            console.log(`[WS Create Chat Success] type=${targetType} chatId=${chat.id} by userId=${myId}`);
         } catch (e) {
             console.error('[Create Chat Error]: ' + e);
             socket.emit('error', { message: 'SERVER_ERROR' })

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { useAppSelector } from "../../../store/hooks";
-import { selectMessagesByChat } from "../../../features/api/messenger/messagesSlice";
-import { ChatHeader } from "../chat-header/chat-header";
+import { useEffect, useRef, useState } from 'react';
+import { useAppSelector } from '../../../store/hooks';
+import { selectMessagesByChat } from '../../../features/api/messenger/messagesSlice';
+import { ChatHeader } from '../chat-header/chat-header';
 import { MessageItem } from '../message-item/message-item';
 import { MessageInput } from '../message-input/message-input';
-import { ChatHello } from "../chat-hello/chat-hello";
+import { ChatHello } from '../chat-hello/chat-hello';
 import styles from './chat-window.module.css';
-import { useChatRoomSocket } from "../../../hooks/shared/socket/chat/chat-room/useChatRoomSocket";
-import { messengerApi } from "../../../features/api/messenger/messengerApi";
+import { useChatRoomSocket } from '../../../hooks/shared/socket/chat/chat-room/useChatRoomSocket';
+import { messengerApi } from '../../../features/api/messenger/messengerApi';
 
 interface Props {
     chatId: number;
@@ -23,15 +23,20 @@ export function ChatWindow({ chatId }: Props) {
 
     const hasScrolledInitiallyRef = useRef(false);
 
-    const [editingMessage, setEditingMessage] = useState<{ id: number; text: string } | null>(null);
+    const [editingMessage, setEditingMessage] = useState<{
+        id: number;
+        text: string;
+    } | null>(null);
     const [inputHeight, setInputHeight] = useState(70);
     const [showScrollDownBtn, setShowScrollDownBtn] = useState(false);
     const [unreadScrolledCount, setUnreadScrolledCount] = useState(0);
-    const [activeMenuMessageId, setActiveMenuMessageId] = useState<number | null>(null);
 
-    const isHistoryLoading = useAppSelector(s => s.messages.isCurrentChatLoading);
-    const messages = useAppSelector(s => selectMessagesByChat(s, chatId));
-    const currentUserId = useAppSelector(s => s.auth.userId);
+    const isHistoryLoading = useAppSelector(
+        (s) => s.messages.isCurrentChatLoading,
+    );
+    const messages = useAppSelector((s) => selectMessagesByChat(s, chatId));
+    console.log(messages);
+    const currentUserId = useAppSelector((s) => s.auth.userId);
 
     useEffect(() => {
         hasScrolledInitiallyRef.current = false;
@@ -42,11 +47,12 @@ export function ChatWindow({ chatId }: Props) {
         setUnreadScrolledCount(0);
     }, [chatId]);
 
-
     useEffect(() => {
         const el = inputRef.current;
         if (!el) return;
-        const observer = new ResizeObserver(() => setInputHeight(el.clientHeight));
+        const observer = new ResizeObserver(() =>
+            setInputHeight(el.clientHeight),
+        );
         observer.observe(el);
         return () => observer.disconnect();
     }, []);
@@ -67,8 +73,11 @@ export function ChatWindow({ chatId }: Props) {
         const container = messagesContainerRef.current;
         if (!container) return;
 
-        const distanceToBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-        
+        const distanceToBottom =
+            container.scrollHeight -
+            container.scrollTop -
+            container.clientHeight;
+
         if (distanceToBottom > 300) {
             setShowScrollDownBtn(true);
         } else {
@@ -113,26 +122,31 @@ export function ChatWindow({ chatId }: Props) {
                 (lastMessage as any)?.sender?.id === currentUserId;
 
             const distanceToBottom =
-                container.scrollHeight - container.scrollTop - container.clientHeight;
+                container.scrollHeight -
+                container.scrollTop -
+                container.clientHeight;
 
             if (isMyMessage || distanceToBottom < 200) {
                 requestAnimationFrame(() => {
                     const c = messagesContainerRef.current;
-                    if (c) c.scrollTo({
-                        top: c.scrollHeight,
-                        behavior: 'smooth',
-                    });
+                    if (c)
+                        c.scrollTo({
+                            top: c.scrollHeight,
+                            behavior: 'smooth',
+                        });
                     setUnreadScrolledCount(0);
-                })
+                });
             } else {
                 if (prevLengthRef.current > 0) {
                     const delta = messages.length - prevLengthRef.current;
-                    setUnreadScrolledCount(prev => prev + delta);
+                    setUnreadScrolledCount((prev) => prev + delta);
                 }
             }
         } else {
             const distanceToBottom =
-                container.scrollHeight - container.scrollTop - container.clientHeight;
+                container.scrollHeight -
+                container.scrollTop -
+                container.clientHeight;
 
             if (distanceToBottom < 150) {
                 container.scrollTop = container.scrollHeight;
@@ -148,8 +162,6 @@ export function ChatWindow({ chatId }: Props) {
         setShowScrollDownBtn(false);
     };
 
-    const handleCloseAllMenus = () => setActiveMenuMessageId(null);
-
     return (
         <div className={styles.window}>
             <ChatHeader chatId={chatId} />
@@ -158,7 +170,6 @@ export function ChatWindow({ chatId }: Props) {
                 className={styles.messages}
                 onScroll={() => {
                     handleScrollTracking();
-                    setActiveMenuMessageId(null);
                 }}
                 style={{ paddingBottom: `${inputHeight + 15}px` }}
             >
@@ -172,9 +183,6 @@ export function ChatWindow({ chatId }: Props) {
                             key={`${chatId}-${msg.id}`}
                             message={msg}
                             onEditInit={handleEditInit}
-                            isMenuOpen={activeMenuMessageId === msg.id}
-                            onOpenMenu={() => setActiveMenuMessageId(msg.id)}
-                            onCloseMenu={() => setActiveMenuMessageId(null)}
                         />
                     ))
                 )}
@@ -186,11 +194,22 @@ export function ChatWindow({ chatId }: Props) {
                     onClick={handleScrollToBottom}
                     style={{ bottom: `${inputHeight + 20}px` }}
                 >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
                         <polyline points="6 9 12 15 18 9" />
                     </svg>
                     {unreadScrolledCount > 0 && (
-                        <span className={styles.scrollBadge}>{unreadScrolledCount}</span>
+                        <span className={styles.scrollBadge}>
+                            {unreadScrolledCount}
+                        </span>
                     )}
                 </button>
             )}
