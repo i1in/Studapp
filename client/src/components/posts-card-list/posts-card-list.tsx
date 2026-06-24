@@ -2,14 +2,13 @@ import { PostList } from "../../types/post";
 import PostCard from '../post-card/post-card';
 import { useGetPostsQuery } from '../../features/api/posts/postsApi';
 import { EmptyPreview } from "../empty-preview/empty-preview";
+import { Loader } from "../shared/loader-circle/loader-circle";
 
 function PostCardList() {
     const { data: posts, isLoading, error } = useGetPostsQuery();
 
     if (isLoading) return (
-        <div className="loading">
-            <p className="loading-title">Loading</p>
-        </div>
+        <Loader />
     );
 
     if (error) {

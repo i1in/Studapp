@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import NotFound from '../not-found/not-found';
 import { AppLayout } from '../../components/shared/app-layout/app-layout';
+import { Loader } from '../../components/shared/loader-circle/loader-circle';
 
 function PostPage() {
     const location = useLocation();
@@ -49,7 +50,7 @@ function PostPage() {
         }
     }, [post, currentUserId]);
 
-    if (isLoading) return <div>Загрузка...</div>;
+    if (isLoading) return <Loader />;
     if (!post) return <NotFound />;
     console.log(post);
 

@@ -62,17 +62,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 24px;
+    width: 24px !important;
+    height: 24px !important;
 }
 
 .sidebarVariant .tabIcon svg {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: 22px !important;
+    height: 22px !important;
 }
 
 .sidebarVariant .tabText {
     flex-shrink: 0;
+}
+
+.messengerMode .tabText {
+    display: none !important;
 }
 
 .tabLabel {
@@ -265,6 +270,7 @@
     .sidebarVariant .navLinks {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
         gap: .4rem;
         padding: .5rem 8px;
         justify-content: flex-start;
@@ -305,6 +311,7 @@
     }
 
     .sidebarVariant .tabText {
+        display: block;
         opacity: 0;
         visibility: hidden;
         transform: translateX(-10px);

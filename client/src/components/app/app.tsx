@@ -46,7 +46,7 @@ function App(): JSX.Element {
         tryRefresh();
     }, [dispatch]);
 
-    if (!isAuthLoaded) return <div>LOADING</div>;
+    if (!isAuthLoaded) return <div></div>;
 
     return (
         <BrowserRouter>

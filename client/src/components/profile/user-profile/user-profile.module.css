@@ -1,0 +1,105 @@
+.userProfile {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    border-radius: var(--border-radius);
+}
+
+/* Динамические фоны в зависимости от роли */
+.studentBg {
+    background: #939e9c;
+    background: radial-gradient(circle, rgba(147, 158, 156, 1) 0%, rgba(109, 129, 148, 1) 100%);
+}
+
+.teacherBg {
+    background: #004173;
+    background: radial-gradient(circle, rgba(0, 65, 115, 1) 0%, rgba(53, 141, 230, 1) 100%);
+}
+
+.adminBg {
+    background: #730000;
+    background: radial-gradient(circle, rgba(115, 0, 0, 1) 0%, rgba(181, 56, 56, 1) 100%);
+}
+
+.userBio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.userAvatar {
+    display: flex;
+    align-items: center;
+}
+
+.userAvatarImg {
+    width: 6rem;
+    height: 6rem;
+    border: 1px solid rgba(0, 0, 0, .4);
+    border-radius: 50%; /* 🔥 Сразу делаем круглой здесь, без класса .rounded */
+}
+
+.userBioBlock {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: .3rem;
+}
+
+.userNames {
+    color: var(--color-primary);
+    font-size: 1.4rem;
+}
+
+.userStatusText {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    color: var(--color-tip);
+    background-color: transparent;
+    border: none;
+    font-size: .9rem;
+}
+
+.userStatusText:focus-visible {
+    outline: none;
+}
+
+.collapsed {
+    display: none;
+}
+
+.userAdditional {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.userAdditionalBlock {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+}
+
+.userAdditionalLabel {
+    display: flex;
+    align-items: flex-end;
+    color: var(--color-secondary);
+    font-size: small;
+    font-weight: 700;
+    gap: .1rem;
+}
+
+.icon {
+    display: flex;
+    align-items: flex-end;
+}
+
+.userAdditionalText {
+    color: var(--color-primary);
+    font-size: medium;
+}

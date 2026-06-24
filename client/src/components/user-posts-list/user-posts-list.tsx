@@ -3,12 +3,12 @@ import PostCard from '../post-card/post-card';
 import { useGetUserPostsQuery } from '../../features/api/posts/postsApi';
 import { EmptyPreview } from "../empty-preview/empty-preview";
 import { useParams } from 'react-router-dom';
+import { Loader } from "../shared/loader-circle/loader-circle";
 
 function UserCardList() {
     const { username } = useParams<{ username: string }>();
     const { data: posts, isLoading, error } = useGetUserPostsQuery(username!);
     
-    if (isLoading) return <div className="error-message">Loading...</div>;
     if (error) {
         if ('status' in error) {
             return (
@@ -18,6 +18,8 @@ function UserCardList() {
             );
         }
     }
+
+    if (isLoading) return <Loader />;
 
     if (posts?.length === 0) {
         return (

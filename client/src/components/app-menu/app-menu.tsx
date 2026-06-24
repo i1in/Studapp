@@ -1,10 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useContextMenu } from '../../hooks/useContextMenu';
+import { ContextMenu } from '../messenger/context-menu/context-menu';
 import { LogoutButton } from '../logout/logout';
 import { useGetProfileByIdQuery } from '../../features/api/user/userApi';
 import { ProfileAvatar } from '../profile-avatar/profile-avatar';
 import { LinkToProfile } from '../shared/link-to-profile/link-to-profile';
 import { AppRoute } from '../../const';
 import styles from './app-menu.module.css';
+import { AdminButton } from '../admin-button/admin-button';
 
 interface Props {
     isDrawerOpen: boolean;
@@ -21,8 +24,10 @@ export function AppMenu({
     hideOnMobile,
     variant = 'inline',
 }: Props) {
-    const { data: currentUser, isLoading } = useGetProfileByIdQuery();
     const location = useLocation();
+    const { data: currentUser, isLoading } = useGetProfileByIdQuery();
+    console.log(currentUser);
+    const { onContextMenu, close, coords } = useContextMenu();
 
     const isFixed = variant === 'fixed' || variant === 'sidebar';
     const isChatsPage = location.pathname === AppRoute.Chats;
@@ -30,7 +35,6 @@ export function AppMenu({
     const menuClassName = [
         styles.bottomBar,
         hideOnMobile ? styles.mobileHidden : '',
-        isFixed ? styles.bottomBarFixed : '',
         variant === 'sidebar' ? styles.sidebarVariant : '',
     ]
         .filter(Boolean)
@@ -39,7 +43,7 @@ export function AppMenu({
     const isMessenger = location.pathname === AppRoute.Chats;
 
     return (
-        <nav className={menuClassName}>
+        <nav className={`${menuClassName} ${isMessenger ? styles.messengerMode : ''}`}>
             <div className={styles.navLinks}>
                 <Link
                     to={AppRoute.Main}
@@ -62,24 +66,26 @@ export function AppMenu({
                                 height="18"
                                 rx="5"
                                 stroke="currentColor"
-                                stroke-width="2"
+                                strokeWidth="2"
                             />
                             <path
                                 d="M11 16V8M11 16C9 16 6 14.5 6 14.5V6.5C6 6.5 9 8 11 8C13 8 16 6.5 16 6.5V14.5C16 14.5 13 16 11 16Z"
                                 stroke="currentColor"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             />
                         </svg>
                     </span>
                     <span className={styles.tabText}>Studapp</span>
                 </Link>
+
                 {variant === 'sidebar' && (
                     <hr
                         className={`${styles.sidebarDivider} ${styles.sidebarOnly}`}
                     />
                 )}
+
                 <Link
                     to={AppRoute.Search}
                     className={`${styles.tabItem} ${location.pathname === AppRoute.Search ? styles.active : ''}`}
@@ -94,9 +100,7 @@ export function AppMenu({
                             <path d="M448 768A320 320 0 1 0 448 128a320 320 0 0 0 0 640z m297.344-76.992l214.592 214.592-54.336 54.336-214.592-214.592a384 384 0 1 1 54.336-54.336z" />
                         </svg>
                     </span>
-                    {!isMessenger && (
-                        <span className={styles.tabText}>Поиск</span>
-                    )}
+                    <span className={styles.tabText}>Поиск</span>
                 </Link>
 
                 <Link
@@ -113,9 +117,7 @@ export function AppMenu({
                             <path d="M76,2H16c-2.2,0-4,1.8-4,4v80c0,2.2,1.8,4,4,4h60c2.2,0,4-1.8,4-4V6C80,3.8,78.2,2,76,2z M72,82H20V10h52V82z M30,67.5c0-1.9,1.6-3.5,3.5-3.5h23.8c1.9,0,3.5,1.6,3.5,3.5S59.3,71,57.3,71H33.5C31.6,71,30,69.4,30,67.5z M30,53.5c0-1.9,1.6-3.5,3.5-3.5h23.8c1.9,0,3.5,1.6,3.5,3.5S59.3,57,57.3,57H33.5C31.6,57,30,55.4,30,53.5z M61,24.5c0-1.9-1.6-3.5-3.5-3.5h-24c-1.9,0-3.5,1.6-3.5,3.5v14c0,1.9,1.6,3.5,3.5,3.5h24c1.9,0,3.5-1.6,3.5-3.5V24.5z M37,28h17v7H37V28z" />
                         </svg>
                     </span>
-                    {!isMessenger && (
-                        <span className={styles.tabText}>Лента</span>
-                    )}
+                    <span className={styles.tabText}>Лента</span>
                 </Link>
 
                 <Link
@@ -156,9 +158,7 @@ export function AppMenu({
                             />
                         </svg>
                     </span>
-                    {!isMessenger && (
-                        <span className={styles.tabText}>Чаты</span>
-                    )}
+                    <span className={styles.tabText}>Чаты</span>
                 </Link>
 
                 <LinkToProfile
@@ -168,10 +168,44 @@ export function AppMenu({
                     <span className={styles.tabIcon}>
                         <ProfileAvatar />
                     </span>
-                    {!isMessenger && (
-                        <span className={styles.tabText}>Профиль</span>
-                    )}
+                    <span className={styles.tabText}>Профиль</span>
                 </LinkToProfile>
+
+                <button
+                    className={`${styles.tabItem} ${styles.sidebarOnly}`}
+                    style={{ marginTop: 'auto' }}
+                    onContextMenu={onContextMenu}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onContextMenu(e as any);
+                    }}
+                    title="Опции"
+                >
+                    <span className={styles.tabIcon}>
+                        <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M4 8H20" />
+                            <path d="M4 16H20" />
+                        </svg>
+                    </span>
+                    <span className={styles.tabText}>Опции</span>
+                </button>
+                <ContextMenu onClose={close} coords={coords}>
+                    <div className={`${styles.createMenu}`}>
+                        {currentUser?.role === 'admin' && (
+                            <AdminButton role={'menuitem'} danger={false} />
+                        )}
+                        <LogoutButton role={'menuitem'} danger={true} />
+                    </div>
+                </ContextMenu>
             </div>
 
             {isChatsPage && (
@@ -218,7 +252,7 @@ export function AppMenu({
                             </Link>
                             <div className={styles.drawerDivider} />
                             <div className={styles.drawerFooter}>
-                                <LogoutButton />
+                                <LogoutButton danger={true} />
                             </div>
                         </div>
                     </aside>

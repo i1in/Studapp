@@ -12,7 +12,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 
-    "noEmit": true
+    "noEmit": true,
+
+    "lib": ["DOM", "DOM.Iterable", "ESNext"]
   },
   "include": ["src"]
 }

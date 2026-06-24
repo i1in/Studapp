@@ -28,7 +28,7 @@ export const adaptFullUserToClient = (user) => {
         lastname: user.lastName,
         username: user.username || user.publicId,
         email: user.email,
-        role: user.student,
+        role: user.role,
         faculty: user.faculty,
         avatarUrl: user.avatarUrl
             ? `${user.avatarUrl}`

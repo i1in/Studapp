@@ -16,6 +16,7 @@ import {
 import styles from './chat-list.module.css';
 import { getFaculty } from '../../../const';
 import { useContextMenu } from '../../../hooks/useContextMenu';
+import { Loader } from '../../shared/loader-circle/loader-circle';
 
 interface Props {
     onOpenDrawer: () => void;
@@ -139,9 +140,7 @@ export function ChatList({ onOpenDrawer, onSwitchMode }: Props) {
         onSwitchMode(mode);
     };
 
-    if (isLoading) {
-        return <div className={styles.loading}>Загрузка</div>;
-    }
+    if (isLoading) return <Loader />
 
     if (isError) {
         return <div className={styles.error}>Не удалось загрузить чаты</div>;

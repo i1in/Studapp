@@ -7,7 +7,7 @@ import { MessageInput } from '../message-input/message-input';
 import { ChatHello } from '../chat-hello/chat-hello';
 import styles from './chat-window.module.css';
 import { useChatRoomSocket } from '../../../hooks/shared/socket/chat/chat-room/useChatRoomSocket';
-import { messengerApi } from '../../../features/api/messenger/messengerApi';
+import { Loader } from '../../shared/loader-circle/loader-circle';
 
 interface Props {
     chatId: number;
@@ -174,7 +174,7 @@ export function ChatWindow({ chatId }: Props) {
                 style={{ paddingBottom: `${inputHeight + 15}px` }}
             >
                 {isHistoryLoading ? (
-                    <div className={styles.loadingHistoryPlaceholder} />
+                    <Loader />
                 ) : messages.length === 0 ? (
                     <ChatHello />
                 ) : (
