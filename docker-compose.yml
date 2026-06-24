@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: studapp_db
+    restart: always
+    environment:
+      POSTGRES_USER: super
+      POSTGRES_PASSWORD: super
+      POSTGRES_DB: studapp_test
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build: ./server
+    container_name: studapp_server
+    restart: always
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./server/.env
+    environment:
+      - DB_HOST=postgres
+    depends_on:
+      - postgres
+
+  client:
+    build: ./client
+    container_name: studapp_client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+volumes:
+  pgdata:
