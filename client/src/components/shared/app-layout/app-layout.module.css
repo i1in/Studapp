@@ -54,4 +54,8 @@
     .layout {
         padding-left: 64px;
     }
+
+    .headerExtraMobile {
+        display: none;
+    }
 }

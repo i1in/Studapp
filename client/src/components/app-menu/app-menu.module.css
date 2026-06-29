@@ -18,15 +18,6 @@
     z-index: 100;
 }
 
-.sidebarVariant .tabLabel {
-    display: block;
-}
-
-.sidebarVariant .tabItem {
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
 .navLinks {
     display: flex;
     width: 100%;
@@ -35,7 +26,9 @@
     gap: 2rem;
 }
 
-.tabItem {
+/* ─── базовые стили для всех прямых детей navLinks ─── */
+
+.navLinks > *:not(hr) {
     color: var(--color-tip);
     text-decoration: none;
     display: flex;
@@ -43,50 +36,49 @@
     gap: 0.15rem;
     cursor: pointer;
     transition: color 0.2s;
-}
-
-.sidebarOnly {
-    display: none;
-}
-
-.navLinks button {
-    background-color: transparent;
+    background: none;
     border: none;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.tabItem:hover {
+.navLinks > *:not(hr):hover {
     color: var(--color-primary);
 }
+
+/* ─── активный пункт ─── */
+
+.active {
+    color: var(--color-primary);
+}
+
+/* ─── иконка и текст ─── */
 
 .tabIcon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px !important;
-    height: 24px !important;
-}
-
-.sidebarVariant .tabIcon svg {
-    flex-shrink: 0;
-    width: 22px !important;
-    height: 22px !important;
-}
-
-.sidebarVariant .tabText {
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
 }
 
-.messengerMode .tabText {
-    display: none !important;
+.tabText {
+    font-size: 0.75rem;
 }
 
 .tabLabel {
     font-size: 0.75rem;
 }
 
-.active {
-    color: var(--color-primary);
+/* ─── скрыто только в sidebar-режиме на десктопе ─── */
+
+.navLinks > *.sidebarOnly,
+.sidebarOnly {
+    display: none !important;
 }
+
+/* ─── overlay и drawer ─── */
 
 .overlay {
     position: fixed;
@@ -196,7 +188,7 @@
 }
 
 .drawerItem:hover {
-    background-color: rgba(var(--primary-rgb, .5));
+    background-color: rgba(var(--primary-rgb), 0.5);
 }
 
 .drawerIcon {
@@ -214,33 +206,45 @@
     padding: 0.5rem;
 }
 
+/* ─── мобильный ─── */
+
 @media screen and (max-width: 767px) {
     .mobileHidden {
+        display: none !important;
+    }
+
+    .sidebarOnly {
         display: none !important;
     }
 
     .sidebarVariant .tabText {
         display: none;
     }
+
+    .sidebarVariant .navLinks {
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+        gap: 0;
+    }
+
+    .sidebarVariant .navLinks > * {
+        width: auto;
+        flex-direction: column;
+        padding: 0;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
 }
 
 @media screen and (min-width: 768px) {
     .bottomBar:not(.sidebarVariant) {
-        background-color: var(--background);
         justify-content: space-between;
         padding: 0 1.25rem;
         height: 3rem;
     }
 
-    .navLinks {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: space-around;
-        gap: 2rem;
-    }
-
-    .bottomBar:not(.sidebarVariant) .tabLabel {
+    .bottomBar:not(.sidebarVariant) .tabText {
         display: none;
     }
 }
@@ -250,7 +254,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 64px; 
+        width: 64px;
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -259,54 +263,51 @@
         border-top: none;
         border-right: var(--border-primary);
         z-index: 100;
-
         transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebarVariant:hover {
-        width: 200px; 
+        width: 200px;
     }
 
     .sidebarVariant .navLinks {
-        display: flex;
         flex-direction: column;
         flex-grow: 1;
-        gap: .4rem;
-        padding: .5rem 8px;
+        gap: 0.4rem;
+        padding: 0.5rem 8px;
         justify-content: flex-start;
-        width: 100%;
-
-        box-sizing: border-box;
     }
 
-    .sidebarVariant .tabItem {
-        display: flex;
+    .sidebarVariant .navLinks > *:not(hr) {
         flex-direction: row;
         align-items: center;
         width: 100%;
-        text-decoration: none;
         white-space: nowrap;
-
-        padding: 10px 0;
-        padding-left: 13px;
+        padding: 10px 0 10px 13px;
         border-radius: var(--border-radius);
-        box-sizing: border-box;
     }
 
-    .sidebarVariant .tabItem:not(:first-child) {
-        margin-bottom: .4rem;
+    .sidebarVariant .navLinks > *:not(hr):not(:first-child) {
+        margin-bottom: 0.4rem;
     }
-    
-    .sidebarVariant .tabItem:not(:first-child):hover {
-        background-color: rgba(var(--primary-rgb, .3));
+
+    .sidebarVariant .navLinks > *:not(hr):not(:first-child):hover {
+        background-color: rgba(var(--primary-rgb), 0.3);
+    }
+
+    .sidebarVariant .navLinks > *:last-child {
+        margin-top: auto;
     }
 
     .sidebarVariant .tabIcon {
         width: 22px;
         height: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .sidebarVariant .tabIcon svg {
+        width: 22px;
+        height: 22px;
         flex-shrink: 0;
     }
 
@@ -319,10 +320,10 @@
         color: var(--color-primary);
         font-size: 1.1rem;
         font-weight: 500;
-        
-        transition: 
-            opacity 0.2s ease, 
-            transform 0.2s ease, 
+        flex-shrink: 0;
+        transition:
+            opacity 0.2s ease,
+            transform 0.2s ease,
             margin-left 0.2s ease,
             visibility 0.2s;
     }
@@ -334,20 +335,24 @@
         margin-left: 12px;
     }
 
-    .sidebarVariant .tabItem.sidebarOnly {
-        display: flex;
+    .messengerMode .tabText {
+        display: none !important;
+    }
+
+    .sidebarVariant .navLinks > *.sidebarOnly {
+        display: flex !important;
     }
 
     .sidebarDivider {
         width: 100%;
-        height: 1px;
+        height: 0px;
         border: none;
-        background-color: none;
+        background-color: var(--primary);
         margin: 0.5rem 0;
         flex-shrink: 0;
     }
 
     .sidebarVariant .sidebarDivider.sidebarOnly {
-        display: flex;
+        display: flex !important;
     }
 }

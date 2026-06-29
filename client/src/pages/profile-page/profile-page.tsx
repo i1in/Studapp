@@ -7,6 +7,7 @@ import { UserPost } from '../../components/profile/user-post';
 import NotFound from '../not-found/not-found';
 import { AppLayout } from '../../components/shared/app-layout/app-layout';
 import { Loader } from '../../components/shared/loader-circle/loader-circle';
+import { AdditionalMenu } from '../../components/shared/app-buttons/additional-button/additional-button';
 
 function ProfilePage() {
     const { username } = useParams<{ username: string }>();
@@ -19,9 +20,7 @@ function ProfilePage() {
     const hasBack = Boolean(location.state?.from);
 
     if (isLoading) {
-        return (
-            <Loader />
-        );
+        return <Loader />;
     }
 
     if (!user) {
@@ -29,7 +28,15 @@ function ProfilePage() {
     }
 
     return (
-        <AppLayout title={username} hasBack={hasBack}>
+        <AppLayout
+            title={username}
+            hasBack={hasBack}
+            headerExtra={
+                isOwner && (
+                    <AdditionalMenu currentUser={user} showText={false} />
+                )
+            }
+        >
             <div className="user-section">
                 <UserProfile />
                 {isOwner && <UserPost />}

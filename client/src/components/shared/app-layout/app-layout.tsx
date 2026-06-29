@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppMenu } from '../../app-menu/app-menu';
 import styles from './app-layout.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { BackIcon } from '../app-icons/back-icon';
 
 interface Props {
     title?: string;
@@ -45,26 +46,15 @@ export function AppLayout({
                                     className={styles.backBtn}
                                     onClick={handleBack}
                                 >
-                                    <svg
-                                        width="24"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                    >
-                                        <path
-                                            d="M15 19l-7-7 7-7"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
+                                    <BackIcon />
                                 </button>
                             )}
                             <span className={styles.title}>{title}</span>
                         </div>
                         {headerExtra && (
-                            <div className={styles.headerExtra}>
+                            <div
+                                className={`${styles.headerExtra} ${styles.headerExtraMobile}`}
+                            >
                                 {headerExtra}
                             </div>
                         )}
