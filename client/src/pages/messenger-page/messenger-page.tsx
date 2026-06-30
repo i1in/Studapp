@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
     setActiveChat,
@@ -10,6 +10,7 @@ import { AppMenu } from '../../components/app-menu/app-menu';
 import { GroupCreatePanel } from '../../components/messenger/group-create-panel/group-create-panel';
 
 import styles from './messenger.module.css';
+import { useMenuSlot } from '../../hooks/useMenuSlot';
 
 export type SidebarMode = 'chats' | 'create_group' | 'create_channel';
 
@@ -19,6 +20,15 @@ export default function MessengerPage() {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [sidebarMode, setSidebarMode] = useState<SidebarMode>('chats');
+
+    const { setSlot } = useMenuSlot();
+
+    const slotRefCallback = useCallback(
+        (el: HTMLDivElement | null) => {
+            setSlot(el);
+        },
+        [setSlot],
+    );
 
     useEffect(() => {
         return () => {
@@ -55,13 +65,7 @@ export default function MessengerPage() {
                         />
                     )}
                 </div>
-                <AppMenu
-                    variant="messenger"
-                    hideOnMobile={!!activeChatId}
-                    isDrawerOpen={isDrawerOpen}
-                    onOpenDrawer={() => setIsDrawerOpen(true)}
-                    onCloseDrawer={() => setIsDrawerOpen(false)}
-                />
+                <div ref={slotRefCallback} className={styles.menuSlot} />
             </aside>
 
             <main className={styles.main}>

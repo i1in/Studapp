@@ -21,7 +21,6 @@ export function AppLayout({
     fallbackTo = '/',
     children,
 }: Props) {
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -67,13 +66,6 @@ export function AppLayout({
                     {children}
                 </div>
             </div>
-
-            <AppMenu
-                variant="sidebar"
-                isDrawerOpen={isDrawerOpen}
-                onOpenDrawer={() => setIsDrawerOpen(true)}
-                onCloseDrawer={() => setIsDrawerOpen(false)}
-            />
         </>
     );
 }

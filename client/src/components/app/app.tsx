@@ -11,6 +11,7 @@ import { AppRoute, AuthorizationStatus } from '../../const';
 import { useState, useEffect } from 'react';
 import { PrivateRoute } from '../../components/private-route/private-route';
 import { Navigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
     setToken,
@@ -21,9 +22,34 @@ import { useRefreshMutation } from '../../features/api/auth/authApi';
 
 import { usePresence } from '../../hooks/usePresence';
 import { useCoreSocket } from '../../hooks/shared/socket/core/useCoreSocket';
+import { AppMenu } from '../app-menu/app-menu';
+import { MenuSlotProvider, useMenuSlot } from '../../hooks/useMenuSlot';
+
+function AppMenuContent() {
+    const { slot } = useMenuSlot();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const authorizationStatus = useAppSelector(selectAuthorizationStatus);
+
+    const menu = (
+        <AppMenu
+            variant={slot ? 'inline' : 'sidebar'}
+            isDrawerOpen={isDrawerOpen}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+            onCloseDrawer={() => setIsDrawerOpen(false)}
+        />
+    );
+
+    return (
+        <>
+            {authorizationStatus === AuthorizationStatus.Auth &&
+                (slot ? createPortal(menu, slot) : menu)}
+        </>
+    );
+}
 
 function App(): JSX.Element {
     const authorizationStatus = useAppSelector(selectAuthorizationStatus);
+
     const dispatch = useAppDispatch();
     usePresence();
     useCoreSocket();
@@ -50,75 +76,92 @@ function App(): JSX.Element {
 
     return (
         <BrowserRouter>
-            <Routes>
-                <Route
-                    path={AppRoute.Redirect}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <MainPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Main}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <MainPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Profile}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <ProfilePage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Login}
-                    element={
-                        authorizationStatus === AuthorizationStatus.Auth ? (
-                            <Navigate to={AppRoute.Main} replace />
-                        ) : (
-                            <LoginPage />
-                        )
-                    }
-                />
-                <Route
-                    path={`${AppRoute.Post}/:id`}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <PostPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Search}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <UserSearchPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Admin}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <AdminPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path={AppRoute.Chats}
-                    element={
-                        <PrivateRoute authorizationStatus={authorizationStatus}>
-                            <MessengerPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+            <MenuSlotProvider>
+                <Routes>
+                    <Route
+                        path={AppRoute.Redirect}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <MainPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Main}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <MainPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Profile}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <ProfilePage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Login}
+                        element={
+                            authorizationStatus === AuthorizationStatus.Auth ? (
+                                <Navigate to={AppRoute.Main} replace />
+                            ) : (
+                                <LoginPage />
+                            )
+                        }
+                    />
+                    <Route
+                        path={`${AppRoute.Post}/:id`}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <PostPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Search}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <UserSearchPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Admin}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <AdminPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoute.Chats}
+                        element={
+                            <PrivateRoute
+                                authorizationStatus={authorizationStatus}
+                            >
+                                <MessengerPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+                <AppMenuContent />
+            </MenuSlotProvider>
         </BrowserRouter>
     );
 }

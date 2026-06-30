@@ -6,11 +6,13 @@ import { LogoutButton } from '../../app-buttons/logout-button/logout-button';
 import styles from './additional-button.module.css';
 import { OptionIcon } from '../../app-icons/option-icon';
 
+type MenuVariant = 'sidebar' | 'inline' | 'messenger';
+
 interface Props {
     currentUser: any;
     icon?: React.ReactNode;
     label: string;
-    variant?: 'sidebar' | 'inline';
+    variant?: MenuVariant;
     className?: string;
 }
 
@@ -41,6 +43,7 @@ export function AdditionalMenu({
                 onClick={handleTrigger}
                 className={itemClass}
                 variant={variant === 'sidebar' ? 'sidebar' : 'inline'}
+                sidebarOnly
             />
 
             <ContextMenu onClose={close} coords={coords}>

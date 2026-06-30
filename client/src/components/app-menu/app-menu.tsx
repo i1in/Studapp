@@ -47,11 +47,10 @@ export function AppMenu({
         .join(' ');
 
     return (
-        <nav className={`${menuClassName}`}>
+        <nav className={`${menuClassName}`} data-variant={variant}>
             <div className={styles.navLinks}>
                 <MenuButton
                     to={AppRoute.Main}
-                    isActive={location.pathname === AppRoute.Main}
                     icon={<BrandIcon />}
                     label="Studapp"
                     variant={variant}
@@ -99,7 +98,7 @@ export function AppMenu({
                     currentUser={currentUser}
                     icon={<OptionIcon />}
                     label="Опции"
-                    variant={'sidebar'}
+                    variant={variant}
                     className={styles.sidebarOnly}
                 />
             </div>

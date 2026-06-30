@@ -41,6 +41,11 @@
     font-size: 1rem;
 }
 
+.menuSlot {
+    flex-shrink: 0;
+    width: 100%;
+}
+
 @media screen and (max-width: 767px) {
     .layout {
         position: fixed;
@@ -71,7 +76,6 @@
 @media screen and (min-width: 768px) {
     .layout {
         flex-direction: row; 
-        padding-left: 64px; 
     }
 
     .sidebarColumn {
