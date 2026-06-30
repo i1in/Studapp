@@ -1,28 +1,38 @@
 .tabItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: var(--color-tip);
-  padding: 10px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	text-decoration: none;
+	color: var(--color-tip);
+	padding: 10px;
+	border-radius: 8px;
+	transition: background-color 0.2s;
 }
 
 .active {
-  color: var(--color-primary);
-  background-color: var(--color-bg-active);
+	color: var(--color-primary);
+	background-color: var(--color-bg-active);
 }
 
 .tabText {
-  display: var(--menu-text-display, none);
-  
-  opacity: var(--menu-text-opacity, 0);
-  visibility: var(--menu-text-visibility, hidden);
-  transform: translateX(var(--menu-text-translate-x, -10px));
-  
-  transition: 
-    opacity 0.2s ease, 
-    transform 0.2s ease, 
-    visibility 0.2s ease;
+	display: var(--menu-text-display, none);
+
+	opacity: var(--menu-text-opacity, 0);
+	visibility: var(--menu-text-visibility, hidden);
+	transform: translateX(var(--menu-text-translate-x, -10px));
+
+	transition: 
+		opacity 0.2s ease, 
+		transform 0.2s ease, 
+		visibility 0.2s ease;
+}
+
+.sidebarOnly {
+    display: none !important;
+}
+
+@media screen and (min-width: 768px) {
+    :global([data-variant="sidebar"]) .sidebarOnly {
+        display: flex !important;
+    }
 }

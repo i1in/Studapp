@@ -56,6 +56,7 @@ export default function MessengerPage() {
                     )}
                 </div>
                 <AppMenu
+                    variant="messenger"
                     hideOnMobile={!!activeChatId}
                     isDrawerOpen={isDrawerOpen}
                     onOpenDrawer={() => setIsDrawerOpen(true)}

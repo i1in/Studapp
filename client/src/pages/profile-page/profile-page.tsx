@@ -8,6 +8,7 @@ import NotFound from '../not-found/not-found';
 import { AppLayout } from '../../components/shared/app-layout/app-layout';
 import { Loader } from '../../components/shared/loader-circle/loader-circle';
 import { AdditionalMenu } from '../../components/shared/app-buttons/additional-button/additional-button';
+import { OptionIcon } from '../../components/shared/app-icons/option-icon';
 
 function ProfilePage() {
     const { username } = useParams<{ username: string }>();
@@ -33,7 +34,11 @@ function ProfilePage() {
             hasBack={hasBack}
             headerExtra={
                 isOwner && (
-                    <AdditionalMenu currentUser={user} showText={false} />
+                    <AdditionalMenu
+                        currentUser={user}
+                        icon={<OptionIcon />}
+                        label="Опции"
+                    />
                 )
             }
         >

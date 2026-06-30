@@ -8,16 +8,18 @@ import { OptionIcon } from '../../app-icons/option-icon';
 
 interface Props {
     currentUser: any;
+    icon?: React.ReactNode;
+    label: string;
     variant?: 'sidebar' | 'inline';
     className?: string;
-    showText?: boolean;
 }
 
 export function AdditionalMenu({
     currentUser,
     variant,
     className,
-    showText = true,
+    icon,
+    label,
 }: Props) {
     const { onContextMenu, close, coords } = useContextMenu();
 
@@ -33,12 +35,13 @@ export function AdditionalMenu({
 
     return (
         <>
-            <MenuButton onClick={handleTrigger} className={itemClass}>
-                <span className={styles.tabIcon}>
-                    <OptionIcon />
-                </span>
-                {showText && <span className={styles.tabText}>Опции</span>}
-            </MenuButton>
+            <MenuButton
+                icon={icon}
+                label={label}
+                onClick={handleTrigger}
+                className={itemClass}
+                variant={variant === 'sidebar' ? 'sidebar' : 'inline'}
+            />
 
             <ContextMenu onClose={close} coords={coords}>
                 {currentUser?.role === 'admin' && (

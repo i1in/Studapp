@@ -159,6 +159,10 @@ h3,
     font-family: var(--font-family);
 }
 
+a, button {
+    cursor: pointer;
+}
+
 body {
     height: 100%;
     background-color: var(--background);

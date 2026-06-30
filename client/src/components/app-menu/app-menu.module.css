@@ -54,7 +54,7 @@
 
 /* ─── иконка и текст ─── */
 
-.tabIcon {
+[data-menu-icon] {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +63,7 @@
     flex-shrink: 0;
 }
 
-.tabText {
+[data-menu-label] {
     font-size: 0.75rem;
 }
 
@@ -75,6 +75,10 @@
 
 .navLinks > *.sidebarOnly,
 .sidebarOnly {
+    display: none !important;
+}
+
+.messengerMode [data-menu-label] {
     display: none !important;
 }
 
@@ -217,7 +221,7 @@
         display: none !important;
     }
 
-    .sidebarVariant .tabText {
+    .sidebarVariant [data-menu-label] {
         display: none;
     }
 
@@ -242,10 +246,6 @@
         justify-content: space-between;
         padding: 0 1.25rem;
         height: 3rem;
-    }
-
-    .bottomBar:not(.sidebarVariant) .tabText {
-        display: none;
     }
 }
 
@@ -299,19 +299,23 @@
         margin-top: auto;
     }
 
-    .sidebarVariant .tabIcon {
+    .sidebarVariant [data-menu-icon] {
         width: 22px;
         height: 22px;
         flex-shrink: 0;
     }
 
-    .sidebarVariant .tabIcon svg {
+    .sidebarVariant [data-menu-icon] svg {
         width: 22px;
         height: 22px;
         flex-shrink: 0;
     }
 
-    .sidebarVariant .tabText {
+    .bottomBar [data-menu-label] {
+        display: none;
+    }
+
+    .sidebarVariant [data-menu-label] {
         display: block;
         opacity: 0;
         visibility: hidden;
@@ -328,14 +332,14 @@
             visibility 0.2s;
     }
 
-    .sidebarVariant:hover .tabText {
+    .sidebarVariant:hover [data-menu-label] {
         opacity: 1;
         visibility: visible;
         transform: translateX(0);
         margin-left: 12px;
     }
 
-    .messengerMode .tabText {
+    .messengerMode [data-menu-label] {
         display: none !important;
     }
 

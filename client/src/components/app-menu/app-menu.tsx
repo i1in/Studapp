@@ -12,13 +12,16 @@ import { FeedIcon } from '../shared/app-icons/feed-icon';
 import { ChatsIcon } from '../shared/app-icons/chats-icon';
 
 import styles from './app-menu.module.css';
+import { OptionIcon } from '../shared/app-icons/option-icon';
+
+type MenuVariant = 'sidebar' | 'inline' | 'messenger';
 
 interface Props {
     isDrawerOpen: boolean;
     onCloseDrawer: () => void;
     onOpenDrawer: () => void;
     hideOnMobile?: boolean;
-    variant?: 'fixed' | 'inline' | 'sidebar';
+    variant?: MenuVariant;
 }
 
 export function AppMenu({
@@ -32,35 +35,28 @@ export function AppMenu({
     const { data: currentUser, isLoading } = useGetProfileByIdQuery();
     console.log(currentUser);
 
-    const isFixed = variant === 'fixed' || variant === 'sidebar';
     const isChatsPage = location.pathname === AppRoute.Chats;
 
     const menuClassName = [
         styles.bottomBar,
         hideOnMobile ? styles.mobileHidden : '',
         variant === 'sidebar' ? styles.sidebarVariant : '',
+        variant === 'messenger' ? styles.messengerMode : '',
     ]
         .filter(Boolean)
         .join(' ');
 
-    const isMessenger = location.pathname === AppRoute.Chats;
-
     return (
-        <nav
-            className={`${menuClassName} ${isMessenger ? styles.messengerMode : ''}`}
-            data-variant={variant}
-        >
+        <nav className={`${menuClassName}`}>
             <div className={styles.navLinks}>
                 <MenuButton
                     to={AppRoute.Main}
                     isActive={location.pathname === AppRoute.Main}
-                    className={styles.sidebarOnly}
-                >
-                    <span className={styles.tabIcon}>
-                        <BrandIcon />
-                    </span>
-                    <span className={styles.tabText}>Studapp</span>
-                </MenuButton>
+                    icon={<BrandIcon />}
+                    label="Studapp"
+                    variant={variant}
+                    sidebarOnly
+                />
 
                 {variant === 'sidebar' && (
                     <hr
@@ -71,43 +67,39 @@ export function AppMenu({
                 <MenuButton
                     to={AppRoute.Search}
                     isActive={location.pathname === AppRoute.Search}
-                >
-                    <span className={styles.tabIcon}>
-                        <SearchIcon />
-                    </span>
-                    <span className={styles.tabText}>Поиск</span>
-                </MenuButton>
+                    icon={<SearchIcon />}
+                    label="Поиск"
+                    variant={variant}
+                />
 
                 <MenuButton
                     to={AppRoute.Main}
                     isActive={location.pathname === AppRoute.Main}
-                >
-                    <span className={styles.tabIcon}>
-                        <FeedIcon />
-                    </span>
-                    <span className={styles.tabText}>Лента</span>
-                </MenuButton>
+                    icon={<FeedIcon />}
+                    label="Лента"
+                    variant={variant}
+                />
 
                 <MenuButton
                     to={AppRoute.Chats}
                     isActive={location.pathname === AppRoute.Chats}
-                >
-                    <span className={styles.tabIcon}>
-                        <ChatsIcon />
-                    </span>
-                    <span className={styles.tabText}>Чаты</span>
-                </MenuButton>
+                    icon={<ChatsIcon />}
+                    label="Чаты"
+                    variant={variant}
+                />
 
-                <LinkToProfile userOrUsername={currentUser}>
-                    <span className={styles.tabIcon}>
-                        <ProfileAvatar />
-                    </span>
-                    <span className={styles.tabText}>Профиль</span>
-                </LinkToProfile>
+                <MenuButton
+                    to={`/${currentUser?.username}`}
+                    icon={<ProfileAvatar />}
+                    label="Профиль"
+                    variant={variant}
+                />
 
                 <AdditionalMenu
                     currentUser={currentUser}
-                    variant={variant === 'sidebar' ? 'sidebar' : 'inline'}
+                    icon={<OptionIcon />}
+                    label="Опции"
+                    variant={'sidebar'}
                     className={styles.sidebarOnly}
                 />
             </div>

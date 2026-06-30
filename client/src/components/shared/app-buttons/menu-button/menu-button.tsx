@@ -1,49 +1,71 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './menu-button.module.css';
-import React from 'react';
+
+type MenuVariant = 'sidebar' | 'inline' | 'messenger';
 
 interface Props {
     to?: string;
     onClick?: (e: any) => void;
     className?: string;
-    label?: string;
+    icon?: React.ReactNode;
+    label: string;
     showText?: boolean;
     isActive?: boolean;
-    children: React.ReactNode;
+    variant: MenuVariant;
+    sidebarOnly?: boolean;
 }
 
 export function MenuButton({
     to,
     onClick,
     className,
+    icon,
     label,
     showText = true,
     isActive,
-    children,
+    variant,
+    sidebarOnly,
 }: Props) {
+    const isSidebar = variant === 'sidebar';
+
     const baseClass = [
         styles.tabItem,
         isActive ? styles.active : '',
-        className || '',
+        isSidebar ? styles.sidebarItem : '',
+        sidebarOnly ? styles.sidebarOnly : '',
+        className,
     ]
         .filter(Boolean)
         .join(' ');
 
-    console.log(isActive);
+    console.log(icon, label)
+
+    const content = (
+        <>
+            <span className={styles.tabIcon} data-menu-icon>
+                {icon}
+            </span>
+
+            {showText && (
+                <span className={styles.tabText} data-menu-label>
+                    {label}
+                </span>
+            )}
+        </>
+    );
 
     if (to) {
         return (
             <Link to={to} className={baseClass}>
-                {children}
-                {showText && <span className={styles.tabText}>{label}</span>}
+                {content}
             </Link>
         );
     }
 
     return (
         <button onClick={onClick} className={baseClass} type="button">
-            {children}
-            {showText && <span className={styles.tabText}>{label}</span>}
+            {content}
         </button>
     );
 }
