@@ -62,7 +62,7 @@
 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(var(--primary), 0.6);
+    background-color: rgba(var(--primary-rgb), 0.6);
 }
 
 .scrollDownBtn:hover {

@@ -40,6 +40,7 @@ export function AppMenu({
     const menuClassName = [
         styles.bottomBar,
         hideOnMobile ? styles.mobileHidden : '',
+        variant === 'inline' ? styles.floatingInline : styles.floating,
         variant === 'sidebar' ? styles.sidebarVariant : '',
         variant === 'messenger' ? styles.messengerMode : '',
     ]
@@ -102,57 +103,6 @@ export function AppMenu({
                     className={styles.sidebarOnly}
                 />
             </div>
-
-            {isChatsPage && (
-                <>
-                    <div
-                        className={`${styles.overlay} ${isDrawerOpen ? styles.overlayVisible : ''}`}
-                        onClick={onCloseDrawer}
-                    />
-                    <aside
-                        className={`${styles.drawer} ${isDrawerOpen ? styles.drawerOpen : ''}`}
-                    >
-                        <div className={styles.drawerHeader}>
-                            <div className={styles.userAvatar}>
-                                <ProfileAvatar />
-                            </div>
-                            <div className={styles.userInfo}>
-                                <span className={styles.userName}>
-                                    {isLoading
-                                        ? 'Загрузка...'
-                                        : `${currentUser?.firstName ?? ''} ${currentUser?.lastName ?? ''}`.trim() ||
-                                          'Пользователь'}
-                                </span>
-                                <span className={styles.userStatus}>
-                                    В сети
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className={styles.drawerContent}>
-                            <LinkToProfile
-                                userOrUsername={currentUser}
-                                className={styles.drawerItem}
-                            >
-                                <ProfileAvatar />
-                                <span className={styles.drawerText}>
-                                    Мой профиль
-                                </span>
-                            </LinkToProfile>
-                            <Link to="/settings" className={styles.drawerItem}>
-                                <span className={styles.drawerIcon}>⚙️</span>
-                                <span className={styles.drawerText}>
-                                    Настройки
-                                </span>
-                            </Link>
-                            <div className={styles.drawerDivider} />
-                            <div className={styles.drawerFooter}>
-                                <LogoutButton danger={true} />
-                            </div>
-                        </div>
-                    </aside>
-                </>
-            )}
         </nav>
     );
 }

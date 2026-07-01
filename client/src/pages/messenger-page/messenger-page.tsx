@@ -4,13 +4,15 @@ import {
     setActiveChat,
     setChats,
 } from '../../features/api/messenger/messengerSlice';
+import { useGetProfileByIdQuery } from '../../features/api/user/userApi';
 import { ChatList } from '../../components/messenger/chat-list/chat-list';
 import { ChatWindow } from '../../components/messenger/chat-window/chat-window';
-import { AppMenu } from '../../components/app-menu/app-menu';
+import { SideDrawer } from '../../components/shared/side-drawer/side-drawer';
 import { GroupCreatePanel } from '../../components/messenger/group-create-panel/group-create-panel';
+import { useDrawer } from '../../hooks/useDrawer';
+import { useMenuSlot } from '../../hooks/useMenuSlot';
 
 import styles from './messenger.module.css';
-import { useMenuSlot } from '../../hooks/useMenuSlot';
 
 export type SidebarMode = 'chats' | 'create_group' | 'create_channel';
 
@@ -18,7 +20,8 @@ export default function MessengerPage() {
     const dispatch = useAppDispatch();
     const activeChatId = useAppSelector((s) => s.messenger.activeChatId);
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const drawer = useDrawer();
+    const { data: currentUser, isLoading } = useGetProfileByIdQuery();
     const [sidebarMode, setSidebarMode] = useState<SidebarMode>('chats');
 
     const { setSlot } = useMenuSlot();
@@ -46,7 +49,7 @@ export default function MessengerPage() {
                 <div className={styles.chatListArea}>
                     {sidebarMode === 'chats' && (
                         <ChatList
-                            onOpenDrawer={() => setIsDrawerOpen(true)}
+                            onOpenDrawer={drawer.open}
                             onSwitchMode={(mode) => setSidebarMode(mode)}
                         />
                     )}
@@ -75,6 +78,13 @@ export default function MessengerPage() {
                     <span className={styles.empty}>Выберите чат</span>
                 )}
             </main>
+
+            <SideDrawer
+                isOpen={drawer.isOpen}
+                onClose={drawer.close}
+                currentUser={currentUser}
+                isLoading={isLoading}
+            />
         </div>
     );
 }

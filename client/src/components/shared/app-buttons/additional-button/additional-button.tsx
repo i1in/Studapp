@@ -43,7 +43,6 @@ export function AdditionalMenu({
                 onClick={handleTrigger}
                 className={itemClass}
                 variant={variant === 'sidebar' ? 'sidebar' : 'inline'}
-                sidebarOnly
             />
 
             <ContextMenu onClose={close} coords={coords}>

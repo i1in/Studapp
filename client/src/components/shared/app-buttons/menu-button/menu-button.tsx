@@ -39,8 +39,6 @@ export function MenuButton({
         .filter(Boolean)
         .join(' ');
 
-    console.log(icon, label)
-
     const content = (
         <>
             <span className={styles.tabIcon} data-menu-icon>

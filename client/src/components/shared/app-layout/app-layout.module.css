@@ -1,7 +1,7 @@
 .layout {
     display: flex;
     flex-direction: column;
-    height: 100dvh;
+    height: calc(100dvh - 3rem); /* 3rem - высота appmenu на мобилках */
     overflow: hidden;
     background: var(--background);
 }
@@ -54,7 +54,8 @@
 
 @media screen and (min-width: 768px) {
     .layout {
-        padding-left: 64px;
+        height: 100vh;
+        padding-left: calc(64px + .4rem);
     }
 
     .headerExtraMobile {
